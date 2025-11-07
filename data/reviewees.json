@@ -1,0 +1,19 @@
+{
+  "reviewees": [
+    {
+      "id": "emp-001",
+      "name": "John Doe",
+      "email": "john.doe@rocscience.com",
+      "title": "Senior Software Engineer",
+      "managers": ["jane.smith@rocscience.com"]
+    },
+    {
+      "id": "emp-002",
+      "name": "Alice Johnson",
+      "email": "alice.johnson@rocscience.com",
+      "title": "Software Engineer",
+      "managers": ["jane.smith@rocscience.com"]
+    }
+  ]
+}
+

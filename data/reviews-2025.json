@@ -1,0 +1,35 @@
+{
+  "reviews": [
+    {
+      "id": "rev-2025-mid-001",
+      "revieweeId": "emp-001",
+      "period": "mid-year",
+      "year": 2025,
+      "status": "pending",
+      "employeeCategoryRatings": "ERcYFhITHhRXX1xT",
+      "managerCategoryRatings": "ERcYFhITHhRXX1xT",
+      "employeeOverallScore": null,
+      "managerOverallScore": null,
+      "employeeComments": {},
+      "managerComments": {},
+      "employeeCareerDev": "",
+      "managerCareerDev": ""
+    },
+    {
+      "id": "rev-2025-mid-002",
+      "revieweeId": "emp-002",
+      "period": "mid-year",
+      "year": 2025,
+      "status": "pending",
+      "employeeCategoryRatings": "ERcYFhITHhRXX1xT",
+      "managerCategoryRatings": "ERcYFhITHhRXX1xT",
+      "employeeOverallScore": null,
+      "managerOverallScore": null,
+      "employeeComments": {},
+      "managerComments": {},
+      "employeeCareerDev": "",
+      "managerCareerDev": ""
+    }
+  ]
+}
+
