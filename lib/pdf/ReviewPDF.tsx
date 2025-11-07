@@ -19,20 +19,19 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingTop: 20,
-    paddingBottom: 15,
+    paddingBottom: 10,
     paddingLeft: 30,
     paddingRight: 30,
-    borderBottom: '3 solid #f97316', // Orange border matching Rocscience branding
     backgroundColor: '#ffffff',
   },
   letterheadLogo: {
-    width: 180,
-    height: 50,
-    marginBottom: 5,
+    width: 150,
+    marginBottom: 10,
+    objectFit: 'contain',
   },
   letterheadDivider: {
-    borderTop: '1 solid #e5e7eb',
-    marginTop: 10,
+    borderTop: '2 solid #f97316',
+    marginTop: 5,
   },
   header: {
     marginBottom: 20,
