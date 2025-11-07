@@ -595,6 +595,12 @@ export default function ManagerReviewsPage() {
                                     >
                                       {review.status === 'completed' ? 'View' : 'Edit Review'}
                                     </button>
+                                    <button
+                                      onClick={() => window.open(`/api/review/${review.id}/pdf`, '_blank')}
+                                      className="text-blue-600 hover:text-blue-800 text-xs"
+                                    >
+                                      Export PDF
+                                    </button>
                                     {review.status !== 'not-started' && (
                                       <button
                                         onClick={() => handleChangeStatus(review.id, 'in-progress')}

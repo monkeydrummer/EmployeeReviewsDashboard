@@ -396,20 +396,40 @@ export default function ManagerReviewPage() {
 
         {/* Action Buttons */}
         {!isReadOnly && (
-          <div className="flex gap-4 sticky bottom-4">
+          <div className="space-y-3 sticky bottom-4">
+            <div className="flex gap-4">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 disabled:bg-gray-400 font-medium"
+              >
+                {saving ? 'Saving...' : 'Save Progress'}
+              </button>
+              <button
+                onClick={handleComplete}
+                disabled={saving}
+                className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:bg-gray-400 font-medium"
+              >
+                {saving ? 'Submitting...' : 'Mark Complete'}
+              </button>
+            </div>
             <button
-              onClick={handleSave}
-              disabled={saving}
-              className="flex-1 bg-gray-600 text-white py-3 rounded-lg hover:bg-gray-700 disabled:bg-gray-400 font-medium"
+              onClick={() => window.open(`/api/review/${reviewId}/pdf`, '_blank')}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-medium"
             >
-              {saving ? 'Saving...' : 'Save Progress'}
+              Export as PDF
             </button>
+          </div>
+        )}
+        
+        {/* Export PDF button for read-only mode */}
+        {isReadOnly && (
+          <div className="sticky bottom-4">
             <button
-              onClick={handleComplete}
-              disabled={saving}
-              className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:bg-gray-400 font-medium"
+              onClick={() => window.open(`/api/review/${reviewId}/pdf`, '_blank')}
+              className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-medium"
             >
-              {saving ? 'Submitting...' : 'Mark Complete'}
+              Export as PDF
             </button>
           </div>
         )}
