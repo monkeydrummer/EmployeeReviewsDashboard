@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { verifyAdminPasswordAsync, isValidEmail } from '@/lib/auth';
+import { isValidEmail } from '@/lib/auth';
 
 export default function HomePage() {
   const router = useRouter();
@@ -19,8 +19,13 @@ export default function HomePage() {
     setLoading(true);
     
     try {
-      const isValid = await verifyAdminPasswordAsync(password);
-      if (isValid) {
+      const response = await fetch('/api/auth/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      
+      if (response.ok) {
         router.push('/admin');
       } else {
         setError('Incorrect password');

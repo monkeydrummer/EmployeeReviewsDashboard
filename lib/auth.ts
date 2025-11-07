@@ -69,30 +69,6 @@ export function verifyAdminPassword(inputPassword: string): boolean {
 }
 
 /**
- * Async version that checks stored admin password first
- * Use this for login verification
- */
-export async function verifyAdminPasswordAsync(inputPassword: string): Promise<boolean> {
-  // First try to import storage (only works server-side)
-  try {
-    const { getAdminConfig } = await import('./storage');
-    const { verifyPassword } = await import('./password');
-    
-    const config = await getAdminConfig();
-    
-    // If admin has set a custom password, check it first
-    if (config.hashedPassword) {
-      return verifyPassword(inputPassword, config.hashedPassword);
-    }
-  } catch (error) {
-    // Storage not available, fall through to defaults
-  }
-  
-  // Fall back to default password checking
-  return verifyAdminPassword(inputPassword);
-}
-
-/**
  * Simple email validation
  */
 export function isValidEmail(email: string): boolean {
