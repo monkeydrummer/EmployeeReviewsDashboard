@@ -36,7 +36,12 @@ export default function ManagerReviewPage() {
       const data = await response.json();
       
       if (response.ok) {
-        if (data.reviewee.managers.includes(userEmail)) {
+        // Check if user's email matches any manager assigned to this reviewee
+        const isManager = data.managers && data.managers.some((m: any) => 
+          data.reviewee.managerIds.includes(m.id) && m.email === userEmail
+        );
+        
+        if (isManager) {
           setReview(data.review);
           setReviewee(data.reviewee);
           setIsAuthenticated(true);
