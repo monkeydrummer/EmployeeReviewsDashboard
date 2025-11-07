@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { verifyAdminPassword } from '@/lib/auth';
-import { Review, Reviewee, CATEGORIES } from '@/lib/types';
+import { Review, Reviewee, Manager, CATEGORIES } from '@/lib/types';
 import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 import { formatPeriod } from '@/lib/utils';
 
@@ -12,10 +12,19 @@ export default function AdminPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [managers, setManagers] = useState<Manager[]>([]);
   const [reviewees, setReviewees] = useState<Reviewee[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  
+  // Manager management
+  const [showAddManager, setShowAddManager] = useState(false);
+  const [newManager, setNewManager] = useState({
+    name: '',
+    email: '',
+    title: ''
+  });
   
   // Reviewee management
   const [showAddReviewee, setShowAddReviewee] = useState(false);
@@ -23,7 +32,7 @@ export default function AdminPage() {
     name: '',
     email: '',
     title: '',
-    managers: ''
+    managerIds: [] as string[]
   });
   
   // Review creation
@@ -43,14 +52,17 @@ export default function AdminPage() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [revieweesRes, reviewsRes] = await Promise.all([
+      const [managersRes, revieweesRes, reviewsRes] = await Promise.all([
+        fetch('/api/managers'),
         fetch('/api/reviewees'),
         fetch('/api/reviews')
       ]);
       
+      const managersData = await managersRes.json();
       const revieweesData = await revieweesRes.json();
       const reviewsData = await reviewsRes.json();
       
+      setManagers(managersData.managers);
       setReviewees(revieweesData.reviewees);
       setReviews(reviewsData.reviews);
     } catch (error) {
@@ -70,6 +82,63 @@ export default function AdminPage() {
     }
   };
 
+  const handleAddManager = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    
+    try {
+      const manager: Manager = {
+        id: `mgr-${Date.now()}`,
+        name: newManager.name,
+        email: newManager.email,
+        title: newManager.title
+      };
+      
+      const response = await fetch('/api/managers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, action: 'add', manager })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Manager added successfully');
+        setShowAddManager(false);
+        setNewManager({ name: '', email: '', title: '' });
+        fetchData();
+      } else {
+        setMessage('✗ Error adding manager');
+      }
+    } catch (error) {
+      setMessage('✗ Error adding manager');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteManager = async (managerId: string) => {
+    if (!confirm('Are you sure you want to delete this manager?')) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/managers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, action: 'delete', manager: { id: managerId } })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Manager deleted');
+        fetchData();
+      } else {
+        setMessage('✗ Error deleting manager');
+      }
+    } catch (error) {
+      setMessage('✗ Error deleting manager');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddReviewee = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -80,7 +149,7 @@ export default function AdminPage() {
         name: newReviewee.name,
         email: newReviewee.email,
         title: newReviewee.title,
-        managers: newReviewee.managers.split(',').map(m => m.trim()).filter(m => m)
+        managerIds: newReviewee.managerIds
       };
       
       const response = await fetch('/api/reviewees', {
@@ -92,7 +161,7 @@ export default function AdminPage() {
       if (response.ok) {
         setMessage('✓ Reviewee added successfully');
         setShowAddReviewee(false);
-        setNewReviewee({ name: '', email: '', title: '', managers: '' });
+        setNewReviewee({ name: '', email: '', title: '', managerIds: [] });
         fetchData();
       } else {
         setMessage('✗ Error adding reviewee');
@@ -203,6 +272,13 @@ export default function AdminPage() {
     }
   };
 
+  const getManagerNames = (managerIds: string[]) => {
+    return managerIds
+      .map(id => managers.find(m => m.id === id)?.name)
+      .filter(Boolean)
+      .join(', ') || 'No managers';
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
@@ -259,7 +335,7 @@ export default function AdminPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600 mt-1">Manage reviewees and reviews</p>
+              <p className="text-gray-600 mt-1">Manage managers, reviewees, and reviews</p>
             </div>
             <button
               onClick={() => router.push('/')}
@@ -279,10 +355,106 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Managers Section */}
+        <section className="bg-white rounded-lg shadow-md p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Managers</h2>
+            <button
+              onClick={() => setShowAddManager(!showAddManager)}
+              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              + Add Manager
+            </button>
+          </div>
+
+          {showAddManager && (
+            <form onSubmit={handleAddManager} className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={newManager.name}
+                    onChange={(e) => setNewManager({ ...newManager, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={newManager.email}
+                    onChange={(e) => setNewManager({ ...newManager, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                  <input
+                    type="text"
+                    value={newManager.title}
+                    onChange={(e) => setNewManager({ ...newManager, title: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 disabled:bg-gray-400"
+                >
+                  Add Manager
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddManager(false)}
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Title</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {managers.map((manager) => (
+                  <tr key={manager.id} className="border-t">
+                    <td className="px-4 py-3 text-sm text-gray-900">{manager.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{manager.email}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{manager.title}</td>
+                    <td className="px-4 py-3 text-sm">
+                      <button
+                        onClick={() => handleDeleteManager(manager.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* Reviewees Section */}
         <section className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Reviewees</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Reviewees (Employees)</h2>
             <button
               onClick={() => setShowAddReviewee(!showAddReviewee)}
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
@@ -325,21 +497,31 @@ export default function AdminPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Manager Emails (comma-separated)</label>
-                  <input
-                    type="text"
-                    value={newReviewee.managers}
-                    onChange={(e) => setNewReviewee({ ...newReviewee, managers: e.target.value })}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Managers (select one or more)</label>
+                  <select
+                    multiple
+                    size={Math.min(managers.length, 4)}
+                    value={newReviewee.managerIds}
+                    onChange={(e) => {
+                      const selected = Array.from(e.target.selectedOptions, option => option.value);
+                      setNewReviewee({ ...newReviewee, managerIds: selected });
+                    }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    placeholder="manager1@example.com, manager2@example.com"
                     required
-                  />
+                  >
+                    {managers.map((manager) => (
+                      <option key={manager.id} value={manager.id}>
+                        {manager.name} ({manager.title})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-gray-500 mt-1">Hold Ctrl (Cmd on Mac) to select multiple</p>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || newReviewee.managerIds.length === 0}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
                 >
                   Add Reviewee
@@ -372,7 +554,7 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-sm text-gray-900">{reviewee.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{reviewee.email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{reviewee.title}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{reviewee.managers.join(', ')}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{getManagerNames(reviewee.managerIds)}</td>
                     <td className="px-4 py-3 text-sm">
                       <button
                         onClick={() => handleDeleteReviewee(reviewee.id)}
@@ -510,4 +692,3 @@ export default function AdminPage() {
     </div>
   );
 }
-

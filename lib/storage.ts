@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { Review, RevieweesList, ReviewsList } from './types';
+import { Review, RevieweesList, ReviewsList, ManagersList } from './types';
 import { decodeRatings, encodeRatings, isObfuscated } from './obfuscate';
 
 // Conditionally import Upstash Redis only in production
@@ -21,6 +21,41 @@ const initRedis = async () => {
 const useRedis = () => {
   return process.env.NODE_ENV === 'production' && process.env.UPSTASH_REDIS_REST_URL;
 };
+
+/**
+ * Get the list of all managers
+ */
+export async function getManagersList(): Promise<ManagersList> {
+  if (useRedis()) {
+    await initRedis();
+    const data = await redis.get('managers-list');
+    if (data) {
+      return data as ManagersList;
+    }
+    console.warn('Managers list not found in Redis, falling back to filesystem');
+  }
+  
+  // Filesystem fallback (development)
+  const dataDir = path.join(process.cwd(), 'data');
+  const managersPath = path.join(dataDir, 'managers.json');
+  const fileContents = await fs.readFile(managersPath, 'utf8');
+  return JSON.parse(fileContents);
+}
+
+/**
+ * Save the list of all managers
+ */
+export async function saveManagersList(list: ManagersList): Promise<void> {
+  if (useRedis()) {
+    await initRedis();
+    await redis.set('managers-list', list);
+  } else {
+    // Filesystem (development)
+    const dataDir = path.join(process.cwd(), 'data');
+    const managersPath = path.join(dataDir, 'managers.json');
+    await fs.writeFile(managersPath, JSON.stringify(list, null, 2), 'utf8');
+  }
+}
 
 /**
  * Get the list of all reviewees
@@ -176,6 +211,13 @@ export async function seedRedisFromFiles(): Promise<void> {
   
   try {
     const dataDir = path.join(process.cwd(), 'data');
+    
+    // Seed managers list
+    const managersPath = path.join(dataDir, 'managers.json');
+    const managersData = await fs.readFile(managersPath, 'utf8');
+    const managersList: ManagersList = JSON.parse(managersData);
+    await redis.set('managers-list', managersList);
+    console.log('✓ Seeded managers list to Redis');
     
     // Seed reviewees list
     const revieweesPath = path.join(dataDir, 'reviewees.json');

@@ -5,15 +5,16 @@
       "name": "John Doe",
       "email": "john.doe@rocscience.com",
       "title": "Senior Software Engineer",
-      "managers": ["jane.smith@rocscience.com"]
+      "managerIds": ["mgr-001"]
     },
     {
       "id": "emp-002",
       "name": "Alice Johnson",
       "email": "alice.johnson@rocscience.com",
       "title": "Software Engineer",
-      "managers": ["jane.smith@rocscience.com"]
+      "managerIds": ["mgr-001"]
     }
   ]
 }
+
 

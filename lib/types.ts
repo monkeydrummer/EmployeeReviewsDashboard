@@ -5,13 +5,21 @@ export type ReviewPeriod = "mid-year" | "end-year";
 
 export type ReviewStatus = "pending" | "employee-submitted" | "manager-submitted" | "completed";
 
+// Manager
+export interface Manager {
+  id: string;
+  name: string;
+  email: string;
+  title: string;
+}
+
 // Reviewee (Employee)
 export interface Reviewee {
   id: string;
   name: string;
   email: string;
   title: string;
-  managers: string[];  // manager emails
+  managerIds: string[];  // manager IDs (not emails)
 }
 
 // Review
@@ -49,6 +57,10 @@ export interface Category {
 }
 
 // List structures
+export interface ManagersList {
+  managers: Manager[];
+}
+
 export interface RevieweesList {
   reviewees: Reviewee[];
 }

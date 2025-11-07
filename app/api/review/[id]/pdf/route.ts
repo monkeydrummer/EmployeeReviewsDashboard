@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getReview, getRevieweesList } from '@/lib/storage';
+import { getReview, getRevieweesList, getManagersList } from '@/lib/storage';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { ReviewPDF } from '@/lib/pdf/ReviewPDF';
 import { createElement } from 'react';
@@ -11,14 +11,22 @@ export async function GET(
   try {
     const review = await getReview(params.id);
     const revieweesList = await getRevieweesList();
+    const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === review.revieweeId);
 
     if (!reviewee) {
       return NextResponse.json({ error: 'Reviewee not found' }, { status: 404 });
     }
 
+    // Get manager names
+    const managerNames = reviewee.managerIds
+      .map(id => managersList.managers.find(m => m.id === id)?.name)
+      .filter(Boolean)
+      .join(', ');
+
     // Generate PDF
-    const pdfElement = createElement(ReviewPDF, { review, reviewee });
+    const revieweeWithManagers = { ...reviewee, managers: [managerNames] };
+    const pdfElement = createElement(ReviewPDF, { review, reviewee: revieweeWithManagers });
     const pdfBuffer = await renderToBuffer(pdfElement);
 
     // Return PDF as downloadable file

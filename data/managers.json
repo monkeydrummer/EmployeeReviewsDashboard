@@ -1,0 +1,11 @@
+{
+  "managers": [
+    {
+      "id": "mgr-001",
+      "name": "Jane Smith",
+      "email": "jane.smith@rocscience.com",
+      "title": "Engineering Manager"
+    }
+  ]
+}
+

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getReview, saveReview, getRevieweesList } from '@/lib/storage';
+import { getReview, saveReview, getRevieweesList, getManagersList } from '@/lib/storage';
 
 export async function GET(
   request: NextRequest,
@@ -8,9 +8,10 @@ export async function GET(
   try {
     const review = await getReview(params.id);
     const revieweesList = await getRevieweesList();
+    const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === review.revieweeId);
     
-    return NextResponse.json({ review, reviewee });
+    return NextResponse.json({ review, reviewee, managers: managersList.managers });
   } catch (error) {
     console.error('Error fetching review:', error);
     return NextResponse.json({ error: 'Failed to fetch review' }, { status: 500 });
@@ -28,6 +29,7 @@ export async function POST(
     // Get the current review to verify permissions
     const currentReview = await getReview(params.id);
     const revieweesList = await getRevieweesList();
+    const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === currentReview.revieweeId);
 
     if (!reviewee) {
@@ -36,7 +38,9 @@ export async function POST(
 
     // Verify permissions
     const isEmployee = email === reviewee.email;
-    const isManager = reviewee.managers.includes(email);
+    const isManager = managersList.managers.some(m => 
+      reviewee.managerIds.includes(m.id) && m.email === email
+    );
 
     if (!isEmployee && !isManager) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

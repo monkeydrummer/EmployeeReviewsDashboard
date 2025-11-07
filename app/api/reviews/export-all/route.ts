@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllReviews, getRevieweesList } from '@/lib/storage';
+import { getAllReviews, getRevieweesList, getManagersList } from '@/lib/storage';
 import { verifyAdminPassword } from '@/lib/auth';
 import { renderToBuffer } from '@react-pdf/renderer';
 import { ReviewPDF } from '@/lib/pdf/ReviewPDF';
@@ -16,9 +16,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get all reviews and reviewees
+    // Get all reviews, reviewees, and managers
     const reviews = await getAllReviews();
     const revieweesList = await getRevieweesList();
+    const managersList = await getManagersList();
 
     // Filter reviews based on criteria
     let filteredReviews = reviews;
@@ -48,7 +49,14 @@ export async function POST(request: NextRequest) {
       if (!reviewee) continue;
 
       try {
-        const pdfElement = createElement(ReviewPDF, { review, reviewee });
+        // Get manager names
+        const managerNames = reviewee.managerIds
+          .map(id => managersList.managers.find(m => m.id === id)?.name)
+          .filter(Boolean)
+          .join(', ');
+
+        const revieweeWithManagers = { ...reviewee, managers: [managerNames] };
+        const pdfElement = createElement(ReviewPDF, { review, reviewee: revieweeWithManagers });
         const pdfBuffer = await renderToBuffer(pdfElement);
         const fileName = `${reviewee.name.replace(/\s+/g, '-')}-${review.period}-${review.year}.pdf`;
         zip.file(fileName, pdfBuffer);
