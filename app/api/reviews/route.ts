@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllReviews, saveAllReviews, createReview } from '@/lib/storage';
+import { getAllReviews, saveAllReviews, createReview, getManagersList, getRevieweesList } from '@/lib/storage';
 import { verifyAdminPassword } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
@@ -15,17 +15,46 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { password, action, review } = body;
+    const { password, managerEmail, action, review } = body;
 
-    // Verify admin password
-    if (!verifyAdminPassword(password)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Check authorization: admin or manager
+    let isAdmin = false;
+    let managerId: string | null = null;
+
+    if (password) {
+      // Admin authentication
+      if (!verifyAdminPassword(password)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      isAdmin = true;
+    } else if (managerEmail) {
+      // Manager authentication
+      const managersList = await getManagersList();
+      const manager = managersList.managers.find(m => m.email === managerEmail);
+      if (!manager) {
+        return NextResponse.json({ error: 'Unauthorized - not a manager' }, { status: 401 });
+      }
+      managerId = manager.id;
+    } else {
+      return NextResponse.json({ error: 'No authentication provided' }, { status: 401 });
     }
 
     if (action === 'create') {
+      // Managers can only create reviews for their own reviewees
+      if (!isAdmin && managerId) {
+        const revieweesList = await getRevieweesList();
+        const reviewee = revieweesList.reviewees.find(r => r.id === review.revieweeId);
+        if (!reviewee || !reviewee.managerIds.includes(managerId)) {
+          return NextResponse.json({ error: 'Cannot create review for reviewee not managed by you' }, { status: 403 });
+        }
+      }
       await createReview(review);
       return NextResponse.json({ success: true, review });
     } else if (action === 'update-status') {
+      // Only admin can update status
+      if (!isAdmin) {
+        return NextResponse.json({ error: 'Only admin can update review status' }, { status: 403 });
+      }
       const reviews = await getAllReviews();
       const index = reviews.findIndex(r => r.id === review.id);
       if (index !== -1) {
