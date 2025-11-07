@@ -44,15 +44,22 @@ export function encodePassword(password: string): string {
  * Verify if a password matches the default or environment password (Admin)
  */
 export function verifyAdminPassword(inputPassword: string): boolean {
-  // Check against obfuscated default password
-  const defaultPassword = decodePassword(OBFUSCATED_DEFAULT_PASSWORD);
+  // Check against environment variable first (if set)
+  const envPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+  if (envPassword && inputPassword === envPassword) {
+    return true;
+  }
+  
+  // Check against simple default password for development
+  // In production, always set NEXT_PUBLIC_ADMIN_PASSWORD environment variable
+  const defaultPassword = 'reviews2025';
   if (inputPassword === defaultPassword) {
     return true;
   }
   
-  // Check against environment variable (if set)
-  const envPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
-  if (envPassword && inputPassword === envPassword) {
+  // Also check against obfuscated password (for backward compatibility)
+  const obfuscatedDefault = decodePassword(OBFUSCATED_DEFAULT_PASSWORD);
+  if (inputPassword === obfuscatedDefault) {
     return true;
   }
   
