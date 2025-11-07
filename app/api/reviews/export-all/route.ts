@@ -40,6 +40,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get base URL from request
+    const baseUrl = request.url ? new URL(request.url).origin : '';
+
     // Create ZIP file
     const zip = new JSZip();
 
@@ -56,7 +59,11 @@ export async function POST(request: NextRequest) {
           .join(', ');
 
         const revieweeWithManagers = { ...reviewee, managers: [managerNames] };
-        const pdfElement = createElement(ReviewPDF, { review, reviewee: revieweeWithManagers });
+        const pdfElement = createElement(ReviewPDF, { 
+          review, 
+          reviewee: revieweeWithManagers,
+          baseUrl 
+        });
         const pdfBuffer = await renderToBuffer(pdfElement);
         const fileName = `${reviewee.name.replace(/\s+/g, '-')}-${review.period}-${review.year}.pdf`;
         zip.file(fileName, pdfBuffer);

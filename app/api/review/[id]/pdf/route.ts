@@ -25,9 +25,16 @@ export async function GET(
       .filter(Boolean)
       .join(', ');
 
+    // Get base URL from request
+    const baseUrl = request.url ? new URL(request.url).origin : '';
+
     // Generate PDF
     const revieweeWithManagers = { ...reviewee, managers: [managerNames] };
-    const pdfElement = createElement(ReviewPDF, { review, reviewee: revieweeWithManagers });
+    const pdfElement = createElement(ReviewPDF, { 
+      review, 
+      reviewee: revieweeWithManagers,
+      baseUrl 
+    });
     const pdfBuffer = await renderToBuffer(pdfElement);
 
     // Return PDF as downloadable file

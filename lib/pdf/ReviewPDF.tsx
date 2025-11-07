@@ -196,16 +196,19 @@ const styles = StyleSheet.create({
 interface ReviewPDFProps {
   review: Review;
   reviewee: Reviewee;
+  baseUrl?: string;
 }
 
-export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee }) => {
+export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee, baseUrl = '' }) => {
+  const logoUrl = baseUrl ? `${baseUrl}/images/rocscience-logo-Dark_1.jpg` : '/images/rocscience-logo-Dark_1.jpg';
+  
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Letterhead Header */}
         <View style={styles.letterheadHeader} fixed>
           <Image 
-            src="/images/rocscience-logo-Dark_1.jpg" 
+            src={logoUrl}
             style={styles.letterheadLogo}
           />
           <View style={styles.letterheadDivider} />
@@ -346,7 +349,7 @@ export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee }) => {
         {/* Letterhead Header */}
         <View style={styles.letterheadHeader} fixed>
           <Image 
-            src="/images/rocscience-logo-Dark_1.jpg" 
+            src={logoUrl}
             style={styles.letterheadLogo}
           />
           <View style={styles.letterheadDivider} />
