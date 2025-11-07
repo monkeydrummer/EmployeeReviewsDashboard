@@ -35,6 +35,9 @@ export default function AdminPage() {
   
   // Reviewee management
   const [showAddReviewee, setShowAddReviewee] = useState(false);
+  const [showImportCSV, setShowImportCSV] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [importProgress, setImportProgress] = useState('');
   const [newReviewee, setNewReviewee] = useState({
     name: '',
     email: '',
@@ -196,6 +199,47 @@ export default function AdminPage() {
       }
     } catch (error) {
       setMessage('✗ Error resetting password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCSVImport = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!csvFile) {
+      setMessage('✗ Please select a CSV file');
+      return;
+    }
+
+    setLoading(true);
+    setImportProgress('Reading CSV file...');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', csvFile);
+      formData.append('password', password);
+
+      const response = await fetch('/api/reviewees/import', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`✓ Successfully imported ${data.imported} employee(s). ${data.skipped} skipped.`);
+        setShowImportCSV(false);
+        setCsvFile(null);
+        setImportProgress('');
+        fetchData();
+        setTimeout(() => setMessage(''), 5000);
+      } else {
+        setMessage(data.error || '✗ Error importing CSV');
+        setImportProgress('');
+      }
+    } catch (error) {
+      setMessage('✗ Error importing CSV');
+      setImportProgress('');
     } finally {
       setLoading(false);
     }
@@ -591,13 +635,68 @@ export default function AdminPage() {
         <section className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-900">Reviewees (Employees)</h2>
-            <button
-              onClick={() => setShowAddReviewee(!showAddReviewee)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-            >
-              + Add Reviewee
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowImportCSV(!showImportCSV)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                📁 Import CSV
+              </button>
+              <button
+                onClick={() => setShowAddReviewee(!showAddReviewee)}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                + Add Reviewee
+              </button>
+            </div>
           </div>
+
+          {/* CSV Import Form */}
+          {showImportCSV && (
+            <form onSubmit={handleCSVImport} className="mb-6 p-4 bg-blue-50 rounded-lg space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Upload CSV File
+                </label>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+                <p className="text-xs text-gray-600 mt-2">
+                  CSV format: name,email,title,manager_emails (separate multiple managers with semicolons)
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  Example: John Doe,john@example.com,Software Engineer,manager1@example.com;manager2@example.com
+                </p>
+              </div>
+              {importProgress && (
+                <div className="text-sm text-blue-600">{importProgress}</div>
+              )}
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={loading || !csvFile}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                >
+                  Import Employees
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowImportCSV(false);
+                    setCsvFile(null);
+                    setImportProgress('');
+                  }}
+                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
 
           {showAddReviewee && (
             <form onSubmit={handleAddReviewee} className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
