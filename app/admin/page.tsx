@@ -8,6 +8,12 @@ import { Review, Reviewee, Manager, CATEGORIES } from '@/lib/types';
 import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 import { formatPeriod } from '@/lib/utils';
 
+interface ReviewGroup {
+  period: 'mid-year' | 'end-year';
+  year: number;
+  reviews: Review[];
+}
+
 export default function AdminPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -15,6 +21,7 @@ export default function AdminPage() {
   const [managers, setManagers] = useState<Manager[]>([]);
   const [reviewees, setReviewees] = useState<Reviewee[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewGroups, setReviewGroups] = useState<ReviewGroup[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   
@@ -40,7 +47,7 @@ export default function AdminPage() {
   const [newReview, setNewReview] = useState({
     revieweeId: '',
     period: 'mid-year' as 'mid-year' | 'end-year',
-    year: 2025
+    year: new Date().getFullYear()
   });
 
   useEffect(() => {
@@ -48,6 +55,35 @@ export default function AdminPage() {
       fetchData();
     }
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    // Group reviews by period/year
+    if (reviews.length > 0) {
+      const groups: Map<string, ReviewGroup> = new Map();
+      
+      reviews.forEach(review => {
+        const key = `${review.year}-${review.period}`;
+        if (!groups.has(key)) {
+          groups.set(key, {
+            period: review.period,
+            year: review.year,
+            reviews: []
+          });
+        }
+        groups.get(key)!.reviews.push(review);
+      });
+      
+      // Sort by year (desc) then period (end-year first)
+      const sortedGroups = Array.from(groups.values()).sort((a, b) => {
+        if (a.year !== b.year) return b.year - a.year;
+        return a.period === 'end-year' ? -1 : 1;
+      });
+      
+      setReviewGroups(sortedGroups);
+    } else {
+      setReviewGroups([]);
+    }
+  }, [reviews]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -105,6 +141,7 @@ export default function AdminPage() {
         setShowAddManager(false);
         setNewManager({ name: '', email: '', title: '' });
         fetchData();
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage('✗ Error adding manager');
       }
@@ -129,6 +166,7 @@ export default function AdminPage() {
       if (response.ok) {
         setMessage('✓ Manager deleted');
         fetchData();
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage('✗ Error deleting manager');
       }
@@ -163,6 +201,7 @@ export default function AdminPage() {
         setShowAddReviewee(false);
         setNewReviewee({ name: '', email: '', title: '', managerIds: [] });
         fetchData();
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage('✗ Error adding reviewee');
       }
@@ -187,6 +226,7 @@ export default function AdminPage() {
       if (response.ok) {
         setMessage('✓ Reviewee deleted');
         fetchData();
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage('✗ Error deleting reviewee');
       }
@@ -233,6 +273,7 @@ export default function AdminPage() {
         setMessage('✓ Review created successfully');
         setShowCreateReview(false);
         fetchData();
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage('✗ Error creating review');
       }
@@ -262,6 +303,7 @@ export default function AdminPage() {
       if (response.ok) {
         setMessage('✓ Review marked as completed');
         fetchData();
+        setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage('✗ Error updating review');
       }
@@ -570,124 +612,134 @@ export default function AdminPage() {
           </div>
         </section>
 
-        {/* Reviews Section */}
+        {/* Review Creation Section */}
         <section className="bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-900">Reviews</h2>
-            <button
-              onClick={() => setShowCreateReview(!showCreateReview)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              + Create Review
-            </button>
+            <h2 className="text-2xl font-bold text-gray-900">Create New Review</h2>
           </div>
 
-          {showCreateReview && (
-            <form onSubmit={handleCreateReview} className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
-                  <select
-                    value={newReview.revieweeId}
-                    onChange={(e) => setNewReview({ ...newReview, revieweeId: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    required
-                  >
-                    <option value="">Select Employee</option>
-                    {reviewees.map((reviewee) => (
-                      <option key={reviewee.id} value={reviewee.id}>
-                        {reviewee.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Period</label>
-                  <select
-                    value={newReview.period}
-                    onChange={(e) => setNewReview({ ...newReview, period: e.target.value as any })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  >
-                    <option value="mid-year">Mid-Year</option>
-                    <option value="end-year">End-Year</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                  <input
-                    type="number"
-                    value={newReview.year}
-                    onChange={(e) => setNewReview({ ...newReview, year: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                    min="2020"
-                    max="2030"
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+          <form onSubmit={handleCreateReview} className="p-4 bg-gray-50 rounded-lg space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+                <select
+                  value={newReview.revieweeId}
+                  onChange={(e) => setNewReview({ ...newReview, revieweeId: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
                 >
-                  Create Review
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowCreateReview(false)}
-                  className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
-                >
-                  Cancel
-                </button>
+                  <option value="">Select Employee</option>
+                  {reviewees.map((reviewee) => (
+                    <option key={reviewee.id} value={reviewee.id}>
+                      {reviewee.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </form>
-          )}
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Employee</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Period</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Year</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reviews.map((review) => {
-                  const reviewee = reviewees.find(r => r.id === review.revieweeId);
-                  return (
-                    <tr key={review.id} className="border-t">
-                      <td className="px-4 py-3 text-sm text-gray-900">{reviewee?.name || 'Unknown'}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{formatPeriod(review.period)}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{review.year}</td>
-                      <td className="px-4 py-3">
-                        <ReviewStatusBadge status={review.status} />
-                      </td>
-                      <td className="px-4 py-3 text-sm space-x-2">
-                        <button
-                          onClick={() => router.push(`/review/${review.id}/view`)}
-                          className="text-blue-600 hover:text-blue-800"
-                        >
-                          View
-                        </button>
-                        {review.status !== 'completed' && (
-                          <button
-                            onClick={() => handleMarkCompleted(review.id)}
-                            className="text-green-600 hover:text-green-800"
-                          >
-                            Mark Complete
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Period</label>
+                <select
+                  value={newReview.period}
+                  onChange={(e) => setNewReview({ ...newReview, period: e.target.value as any })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="mid-year">Mid-Year</option>
+                  <option value="end-year">End-Year</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
+                <input
+                  type="number"
+                  value={newReview.year}
+                  onChange={(e) => setNewReview({ ...newReview, year: parseInt(e.target.value) })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  min="2020"
+                  max="2030"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+              >
+                Create Review
+              </button>
+            </div>
+          </form>
         </section>
+
+        {/* Reviews by Period Section */}
+        {reviewGroups.map((group) => (
+          <section key={`${group.year}-${group.period}`} className="bg-white rounded-lg shadow-md p-6">
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {formatPeriod(group.period)} Review {group.year}
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Employee</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Title</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Manager(s)</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.reviews.map((review) => {
+                    const reviewee = reviewees.find(r => r.id === review.revieweeId);
+                    return (
+                      <tr key={review.id} className="border-t">
+                        <td className="px-4 py-3 text-sm text-gray-900">{reviewee?.name || 'Unknown'}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{reviewee?.title || '-'}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {reviewee ? getManagerNames(reviewee.managerIds) : '-'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <ReviewStatusBadge status={review.status} />
+                        </td>
+                        <td className="px-4 py-3 text-sm space-x-2">
+                          <button
+                            onClick={() => router.push(`/review/${review.id}/view`)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            View
+                          </button>
+                          {review.status !== 'completed' && (
+                            <button
+                              onClick={() => handleMarkCompleted(review.id)}
+                              className="text-green-600 hover:text-green-800"
+                            >
+                              Mark Complete
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ))}
+
+        {reviewGroups.length === 0 && (
+          <section className="bg-white rounded-lg shadow-md p-12 text-center">
+            <p className="text-gray-600 text-lg">No reviews created yet.</p>
+            <p className="text-gray-500 text-sm mt-2">Create a review to get started.</p>
+          </section>
+        )}
       </main>
     </div>
   );

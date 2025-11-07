@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Review, Reviewee, CATEGORIES, CAREER_DEV_QUESTION, CategoryRating } from '@/lib/types';
 import CategoryRatingSelect from '@/components/CategoryRatingSelect';
 import OverallScoreInput from '@/components/OverallScoreInput';
@@ -212,22 +213,29 @@ export default function ManagerReviewPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <header className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Manager Assessment</h1>
-              <div className="text-sm text-gray-600 mt-2 space-y-1">
-                <div><span className="font-medium">Employee:</span> {reviewee.name}</div>
-                <div><span className="font-medium">Title:</span> {reviewee.title}</div>
-                <div><span className="font-medium">Period:</span> {formatPeriod(review.period)} {review.year}</div>
-                <div><span className="font-medium">Status:</span> {review.status}</div>
-              </div>
-            </div>
+          <div className="flex items-center justify-between mb-4">
+            <Image
+              src="/images/rocscience_logo.jpg"
+              alt="Rocscience Logo"
+              width={150}
+              height={60}
+              className="object-contain"
+            />
             <button
               onClick={() => router.push('/')}
               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
               Home
             </button>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Manager Assessment</h1>
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              <div><span className="font-medium">Employee:</span> {reviewee.name}</div>
+              <div><span className="font-medium">Title:</span> {reviewee.title}</div>
+              <div><span className="font-medium">Period:</span> {formatPeriod(review.period)} {review.year}</div>
+              <div><span className="font-medium">Status:</span> {review.status}</div>
+            </div>
           </div>
           {message && (
             <div className={`mt-4 px-4 py-2 rounded-lg ${

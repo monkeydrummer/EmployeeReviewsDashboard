@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Review, Reviewee, CATEGORIES, CAREER_DEV_QUESTION } from '@/lib/types';
 import { formatPeriod, getCategoryRatingColor, getCategoryRatingText, formatOverallScore } from '@/lib/utils';
 import RatingDefinitions from '@/components/RatingDefinitions';
@@ -64,19 +65,14 @@ export default function ViewReviewPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <header className="bg-white shadow-sm border-b sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Review Summary</h1>
-              <div className="text-sm text-gray-600 mt-2 space-y-1">
-                <div><span className="font-medium">Employee:</span> {reviewee.name}</div>
-                <div><span className="font-medium">Title:</span> {reviewee.title}</div>
-                <div><span className="font-medium">Period:</span> {formatPeriod(review.period)} {review.year}</div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">Status:</span>
-                  <ReviewStatusBadge status={review.status} />
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center justify-between mb-4">
+            <Image
+              src="/images/rocscience_logo.jpg"
+              alt="Rocscience Logo"
+              width={150}
+              height={60}
+              className="object-contain"
+            />
             <div className="flex gap-2">
               <button
                 onClick={handleExportPDF}
@@ -90,6 +86,18 @@ export default function ViewReviewPage() {
               >
                 Back to Admin
               </button>
+            </div>
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Review Summary</h1>
+            <div className="text-sm text-gray-600 mt-2 space-y-1">
+              <div><span className="font-medium">Employee:</span> {reviewee.name}</div>
+              <div><span className="font-medium">Title:</span> {reviewee.title}</div>
+              <div><span className="font-medium">Period:</span> {formatPeriod(review.period)} {review.year}</div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium">Status:</span>
+                <ReviewStatusBadge status={review.status} />
+              </div>
             </div>
           </div>
         </div>
