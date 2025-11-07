@@ -329,7 +329,8 @@ export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee, baseUrl 
         <View style={styles.letterheadFooter} fixed>
           <View style={styles.footerContent}>
             <View style={styles.footerLeft}>
-              <Text style={styles.footerText}>Employee Performance Review</Text>
+              <Text style={styles.footerText}>{reviewee.name}</Text>
+              <Text style={styles.footerText}>{formatPeriod(review.period)} {review.year}</Text>
             </View>
             <View style={styles.footerCenter}>
               <Text style={styles.footerText}>Confidential Document</Text>
@@ -371,7 +372,8 @@ export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee, baseUrl 
         <View style={styles.letterheadFooter} fixed>
           <View style={styles.footerContent}>
             <View style={styles.footerLeft}>
-              <Text style={styles.footerText}>Employee Performance Review</Text>
+              <Text style={styles.footerText}>{reviewee.name}</Text>
+              <Text style={styles.footerText}>{formatPeriod(review.period)} {review.year}</Text>
             </View>
             <View style={styles.footerCenter}>
               <Text style={styles.footerText}>Confidential Document</Text>
