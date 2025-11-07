@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { verifyAdminPassword, isValidEmail } from '@/lib/auth';
+import { verifyAdminPasswordAsync, isValidEmail } from '@/lib/auth';
 
 export default function HomePage() {
   const router = useRouter();
@@ -13,14 +13,22 @@ export default function HomePage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleAdminLogin = (e: React.FormEvent) => {
+  const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     
-    if (verifyAdminPassword(password)) {
-      router.push('/admin');
-    } else {
-      setError('Incorrect password');
+    try {
+      const isValid = await verifyAdminPasswordAsync(password);
+      if (isValid) {
+        router.push('/admin');
+      } else {
+        setError('Incorrect password');
+      }
+    } catch (error) {
+      setError('Error during login');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -206,12 +214,13 @@ export default function HomePage() {
               >
                 Back
               </button>
-              <button
-                type="submit"
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Login
-              </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+            >
+              {loading ? 'Loading...' : 'Login'}
+            </button>
             </div>
           </form>
         )}

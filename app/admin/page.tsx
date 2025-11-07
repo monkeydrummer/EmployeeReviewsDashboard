@@ -427,12 +427,20 @@ export default function AdminPage() {
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
               <p className="text-gray-600 mt-1">Manage managers, reviewees, and reviews</p>
             </div>
-            <button
-              onClick={() => router.push('/')}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Logout
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => router.push('/admin/change-password')}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              >
+                Change Password
+              </button>
+              <button
+                onClick={() => router.push('/')}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           </div>
           {message && (
             <div className={`mt-4 px-4 py-2 rounded-lg ${

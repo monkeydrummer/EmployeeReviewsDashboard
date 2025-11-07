@@ -43,6 +43,46 @@ export async function getManagersList(): Promise<ManagersList> {
 }
 
 /**
+ * Get admin configuration
+ */
+export async function getAdminConfig(): Promise<{ hashedPassword: string | null }> {
+  if (useRedis()) {
+    await initRedis();
+    const data = await redis.get('admin-config');
+    if (data) {
+      return data as { hashedPassword: string | null };
+    }
+  }
+  
+  // Filesystem fallback (development)
+  const dataDir = path.join(process.cwd(), 'data');
+  const configPath = path.join(dataDir, 'admin-config.json');
+  try {
+    const fileContents = await fs.readFile(configPath, 'utf8');
+    return JSON.parse(fileContents);
+  } catch (error) {
+    // Return default if file doesn't exist
+    return { hashedPassword: null };
+  }
+}
+
+/**
+ * Save admin configuration
+ */
+export async function saveAdminConfig(config: { hashedPassword: string | null }): Promise<void> {
+  if (useRedis()) {
+    await initRedis();
+    await redis.set('admin-config', config);
+    return;
+  }
+  
+  // Filesystem (development)
+  const dataDir = path.join(process.cwd(), 'data');
+  const configPath = path.join(dataDir, 'admin-config.json');
+  await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+}
+
+/**
  * Save the list of all managers
  */
 export async function saveManagersList(list: ManagersList): Promise<void> {
@@ -244,6 +284,19 @@ export async function seedRedisFromFiles(): Promise<void> {
     
     await redis.set('reviews-list', { reviews: decodedReviews });
     console.log('✓ Seeded reviews list to Redis');
+    
+    // Seed admin config
+    const adminConfigPath = path.join(dataDir, 'admin-config.json');
+    try {
+      const adminConfigData = await fs.readFile(adminConfigPath, 'utf8');
+      const adminConfig = JSON.parse(adminConfigData);
+      await redis.set('admin-config', adminConfig);
+      console.log('✓ Seeded admin config to Redis');
+    } catch (error) {
+      // If admin config doesn't exist, create default
+      await redis.set('admin-config', { hashedPassword: null });
+      console.log('✓ Created default admin config in Redis');
+    }
     
     console.log('✓ All data seeded to Redis storage successfully');
   } catch (error) {

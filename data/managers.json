@@ -4,7 +4,8 @@
       "id": "mgr-1762538749387",
       "name": "Jeremy Smith",
       "email": "jeremy.smith@rocscience.com",
-      "title": "Senior Software Development Manager"
+      "title": "Senior Software Development Manager",
+      "hashedPassword": "5e273dcc2fd8299ecc1d926cb80d17d7:f62dfdcbd23645421aff07c675b7ee5904bde8de51e5588f2b107bc1433e1ee33195a2d302146cb03ad0e79382ddee52e5f91f0425d419a12748a5259a6dde72"
     }
   ]
 }

@@ -41,7 +41,9 @@ export function encodePassword(password: string): string {
 }
 
 /**
- * Verify if a password matches the default or environment password (Admin)
+ * Verify if a password matches the admin password
+ * Note: This is a synchronous version that only checks default passwords
+ * Use verifyAdminPasswordAsync for full verification including stored passwords
  */
 export function verifyAdminPassword(inputPassword: string): boolean {
   // Check against environment variable first (if set)
@@ -64,6 +66,30 @@ export function verifyAdminPassword(inputPassword: string): boolean {
   }
   
   return false;
+}
+
+/**
+ * Async version that checks stored admin password first
+ * Use this for login verification
+ */
+export async function verifyAdminPasswordAsync(inputPassword: string): Promise<boolean> {
+  // First try to import storage (only works server-side)
+  try {
+    const { getAdminConfig } = await import('./storage');
+    const { verifyPassword } = await import('./password');
+    
+    const config = await getAdminConfig();
+    
+    // If admin has set a custom password, check it first
+    if (config.hashedPassword) {
+      return verifyPassword(inputPassword, config.hashedPassword);
+    }
+  } catch (error) {
+    // Storage not available, fall through to defaults
+  }
+  
+  // Fall back to default password checking
+  return verifyAdminPassword(inputPassword);
 }
 
 /**
