@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getManagersList, saveManagersList } from '@/lib/storage';
 import { verifyAdminPassword } from '@/lib/auth';
 import { Manager } from '@/lib/types';
+import { hashPassword, verifyPassword } from '@/lib/password';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,14 +17,61 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { password, action, manager } = body;
+    const { password, action, manager, email, password: userPassword } = body;
 
-    // Verify admin password
+    const managersList = await getManagersList();
+
+    // Handle password-related actions (no admin auth needed)
+    if (action === 'set-password') {
+      const managerIndex = managersList.managers.findIndex(m => m.email === email);
+      if (managerIndex === -1) {
+        return NextResponse.json({ error: 'Manager not found' }, { status: 404 });
+      }
+      
+      managersList.managers[managerIndex].hashedPassword = hashPassword(userPassword);
+      await saveManagersList(managersList);
+      return NextResponse.json({ success: true });
+    }
+    
+    if (action === 'change-password') {
+      const { oldPassword, newPassword } = body;
+      const managerIndex = managersList.managers.findIndex(m => m.email === email);
+      
+      if (managerIndex === -1) {
+        return NextResponse.json({ error: 'Manager not found' }, { status: 404 });
+      }
+      
+      const manager = managersList.managers[managerIndex];
+      if (manager.hashedPassword && !verifyPassword(oldPassword, manager.hashedPassword)) {
+        return NextResponse.json({ error: 'Current password is incorrect' }, { status: 401 });
+      }
+      
+      managersList.managers[managerIndex].hashedPassword = hashPassword(newPassword);
+      await saveManagersList(managersList);
+      return NextResponse.json({ success: true });
+    }
+    
+    if (action === 'reset-password') {
+      // Admin only - reset a manager's password
+      if (!verifyAdminPassword(password)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      
+      const managerIndex = managersList.managers.findIndex(m => m.email === email);
+      if (managerIndex === -1) {
+        return NextResponse.json({ error: 'Manager not found' }, { status: 404 });
+      }
+      
+      // Remove password so they have to set it up again
+      delete managersList.managers[managerIndex].hashedPassword;
+      await saveManagersList(managersList);
+      return NextResponse.json({ success: true });
+    }
+
+    // All other actions require admin password
     if (!verifyAdminPassword(password)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const managersList = await getManagersList();
 
     if (action === 'add') {
       managersList.managers.push(manager as Manager);

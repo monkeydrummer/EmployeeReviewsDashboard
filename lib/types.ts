@@ -11,6 +11,7 @@ export interface Manager {
   name: string;
   email: string;
   title: string;
+  hashedPassword?: string; // Optional for backward compatibility
 }
 
 // Reviewee (Employee)
@@ -20,6 +21,7 @@ export interface Reviewee {
   email: string;
   title: string;
   managerIds: string[];  // manager IDs (not emails)
+  hashedPassword?: string; // Optional for backward compatibility
 }
 
 // Review

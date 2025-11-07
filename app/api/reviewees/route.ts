@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getRevieweesList, saveRevieweesList, getManagersList } from '@/lib/storage';
 import { verifyAdminPassword } from '@/lib/auth';
 import { Reviewee } from '@/lib/types';
+import { hashPassword, verifyPassword } from '@/lib/password';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +17,56 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { password, managerEmail, action, reviewee } = body;
+    const { password, managerEmail, action, reviewee, email, password: userPassword } = body;
+
+    const revieweesList = await getRevieweesList();
+
+    // Handle password-related actions (no admin auth needed)
+    if (action === 'set-password') {
+      const revieweeIndex = revieweesList.reviewees.findIndex(r => r.email === email);
+      if (revieweeIndex === -1) {
+        return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
+      }
+      
+      revieweesList.reviewees[revieweeIndex].hashedPassword = hashPassword(userPassword);
+      await saveRevieweesList(revieweesList);
+      return NextResponse.json({ success: true });
+    }
+    
+    if (action === 'change-password') {
+      const { oldPassword, newPassword } = body;
+      const revieweeIndex = revieweesList.reviewees.findIndex(r => r.email === email);
+      
+      if (revieweeIndex === -1) {
+        return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
+      }
+      
+      const reviewee = revieweesList.reviewees[revieweeIndex];
+      if (reviewee.hashedPassword && !verifyPassword(oldPassword, reviewee.hashedPassword)) {
+        return NextResponse.json({ error: 'Current password is incorrect' }, { status: 401 });
+      }
+      
+      revieweesList.reviewees[revieweeIndex].hashedPassword = hashPassword(newPassword);
+      await saveRevieweesList(revieweesList);
+      return NextResponse.json({ success: true });
+    }
+    
+    if (action === 'reset-password') {
+      // Admin only - reset an employee's password
+      if (!verifyAdminPassword(password)) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      
+      const revieweeIndex = revieweesList.reviewees.findIndex(r => r.email === email);
+      if (revieweeIndex === -1) {
+        return NextResponse.json({ error: 'Employee not found' }, { status: 404 });
+      }
+      
+      // Remove password so they have to set it up again
+      delete revieweesList.reviewees[revieweeIndex].hashedPassword;
+      await saveRevieweesList(revieweesList);
+      return NextResponse.json({ success: true });
+    }
 
     // Check authorization: admin or manager
     let isAdmin = false;
@@ -39,8 +89,6 @@ export async function POST(request: NextRequest) {
     } else {
       return NextResponse.json({ error: 'No authentication provided' }, { status: 401 });
     }
-
-    const revieweesList = await getRevieweesList();
 
     if (action === 'add') {
       // Managers can only add reviewees to themselves
