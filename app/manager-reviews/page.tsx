@@ -519,11 +519,11 @@ export default function ManagerReviewsPage() {
             <div className="space-y-8">
               {reviewGroups.map((group) => (
                 <div key={`${group.year}-${group.period}`} className="border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
+                  <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
                     <h3 className="text-xl font-bold text-white">
                       {formatPeriod(group.period)} {group.year}
                     </h3>
-                    <p className="text-purple-100 text-sm mt-1">
+                    <p className="text-orange-50 text-sm mt-1">
                       {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
                     </p>
                   </div>

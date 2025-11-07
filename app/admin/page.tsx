@@ -741,16 +741,14 @@ export default function AdminPage() {
 
         {/* Reviews by Period Section */}
         {reviewGroups.map((group) => (
-          <section key={`${group.year}-${group.period}`} className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {formatPeriod(group.period)} Review {group.year}
-                </h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
-                </p>
-              </div>
+          <section key={`${group.year}-${group.period}`} className="border border-gray-200 rounded-lg overflow-hidden shadow-md">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
+              <h2 className="text-2xl font-bold text-white">
+                {formatPeriod(group.period)} Review {group.year}
+              </h2>
+              <p className="text-orange-50 text-sm mt-1">
+                {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
+              </p>
             </div>
 
             <div className="overflow-x-auto">
