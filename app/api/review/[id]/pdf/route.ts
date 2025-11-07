@@ -6,10 +6,11 @@ import { createElement } from 'react';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const review = await getReview(params.id);
+    const { id } = await params;
+    const review = await getReview(id);
     const revieweesList = await getRevieweesList();
     const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === review.revieweeId);

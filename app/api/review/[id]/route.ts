@@ -3,10 +3,11 @@ import { getReview, saveReview, getRevieweesList, getManagersList } from '@/lib/
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const review = await getReview(params.id);
+    const { id } = await params;
+    const review = await getReview(id);
     const revieweesList = await getRevieweesList();
     const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === review.revieweeId);
@@ -28,14 +29,15 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { review, email } = body;
 
     // Get the current review to verify permissions
-    const currentReview = await getReview(params.id);
+    const currentReview = await getReview(id);
     const revieweesList = await getRevieweesList();
     const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === currentReview.revieweeId);
@@ -55,7 +57,7 @@ export async function POST(
     }
 
     // Save the review
-    await saveReview(params.id, review);
+    await saveReview(id, review);
 
     return NextResponse.json({ success: true, review });
   } catch (error) {
