@@ -12,7 +12,7 @@ import { formatPeriod, getCategoryRatingColor, getCategoryRatingText } from '@/l
 export default function ManagerReviewPage() {
   const params = useParams();
   const router = useRouter();
-  const reviewId = params.id as string;
+  const reviewId = params?.id as string;
   
   const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,10 +23,12 @@ export default function ManagerReviewPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem('managerEmail');
-    if (storedEmail) {
-      setEmail(storedEmail);
-      loadReview(storedEmail);
+    if (reviewId) {
+      const storedEmail = sessionStorage.getItem('managerEmail');
+      if (storedEmail) {
+        setEmail(storedEmail);
+        loadReview(storedEmail);
+      }
     }
   }, [reviewId]);
 

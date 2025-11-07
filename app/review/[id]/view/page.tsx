@@ -11,7 +11,7 @@ import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 export default function ViewReviewPage() {
   const params = useParams();
   const router = useRouter();
-  const reviewId = params.id as string;
+  const reviewId = params?.id as string;
   
   const [review, setReview] = useState<Review | null>(null);
   const [reviewee, setReviewee] = useState<Reviewee | null>(null);
@@ -19,22 +19,29 @@ export default function ViewReviewPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    loadReview();
+    if (reviewId) {
+      loadReview();
+    }
   }, [reviewId]);
 
   const loadReview = async () => {
     setLoading(true);
     try {
+      console.log('Fetching review:', reviewId);
       const response = await fetch(`/api/review/${reviewId}`);
       const data = await response.json();
+      
+      console.log('Review API response:', { status: response.status, data });
       
       if (response.ok) {
         setReview(data.review);
         setReviewee(data.reviewee);
       } else {
-        setMessage('Review not found');
+        console.error('Review not found:', data.error);
+        setMessage(data.error || 'Review not found');
       }
     } catch (error) {
+      console.error('Error loading review:', error);
       setMessage('Error loading review');
     } finally {
       setLoading(false);

@@ -12,7 +12,7 @@ import { formatPeriod } from '@/lib/utils';
 export default function EmployeeReviewPage() {
   const params = useParams();
   const router = useRouter();
-  const reviewId = params.id as string;
+  const reviewId = params?.id as string;
   
   const [email, setEmail] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,10 +23,12 @@ export default function EmployeeReviewPage() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem('employeeEmail');
-    if (storedEmail) {
-      setEmail(storedEmail);
-      loadReview(storedEmail);
+    if (reviewId) {
+      const storedEmail = sessionStorage.getItem('employeeEmail');
+      if (storedEmail) {
+        setEmail(storedEmail);
+        loadReview(storedEmail);
+      }
     }
   }, [reviewId]);
 

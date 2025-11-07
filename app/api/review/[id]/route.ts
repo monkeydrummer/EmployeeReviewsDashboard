@@ -11,9 +11,17 @@ export async function GET(
     const managersList = await getManagersList();
     const reviewee = revieweesList.reviewees.find(r => r.id === review.revieweeId);
     
+    if (!reviewee) {
+      return NextResponse.json({ error: 'Reviewee not found' }, { status: 404 });
+    }
+    
     return NextResponse.json({ review, reviewee, managers: managersList.managers });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching review:', error);
+    // Check if it's a "not found" error
+    if (error?.message?.includes('not found')) {
+      return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+    }
     return NextResponse.json({ error: 'Failed to fetch review' }, { status: 500 });
   }
 }
