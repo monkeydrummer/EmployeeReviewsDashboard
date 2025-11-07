@@ -362,6 +362,38 @@ export default function AdminPage() {
     }
   };
 
+  const handleDeleteReview = async (reviewId: string, revieweeName: string) => {
+    if (!confirm(`Are you sure you want to delete the review for ${revieweeName}? This action cannot be undone.`)) {
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password,
+          action: 'delete',
+          reviewId
+        })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Review deleted successfully');
+        fetchData();
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        const data = await response.json();
+        setMessage(data.error || '✗ Error deleting review');
+      }
+    } catch (error) {
+      setMessage('✗ Error deleting review');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getManagerNames = (managerIds: string[]) => {
     return managerIds
       .map(id => managers.find(m => m.id === id)?.name)
@@ -775,21 +807,32 @@ export default function AdminPage() {
                         <td className="px-4 py-3">
                           <ReviewStatusBadge status={review.status} />
                         </td>
-                        <td className="px-4 py-3 text-sm space-x-2">
-                          <button
-                            onClick={() => router.push(`/review/${review.id}/view`)}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            View
-                          </button>
-                          {review.status !== 'completed' && (
+                        <td className="px-4 py-3 text-sm">
+                          <div className="flex flex-col gap-1">
+                            <div className="space-x-2">
+                              <button
+                                onClick={() => router.push(`/review/${review.id}/view`)}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                View
+                              </button>
+                              {review.status !== 'completed' && (
+                                <button
+                                  onClick={() => handleMarkCompleted(review.id)}
+                                  className="text-green-600 hover:text-green-800"
+                                >
+                                  Mark Complete
+                                </button>
+                              )}
+                            </div>
                             <button
-                              onClick={() => handleMarkCompleted(review.id)}
-                              className="text-green-600 hover:text-green-800"
+                              onClick={() => handleDeleteReview(review.id, reviewee?.name || 'Unknown')}
+                              className="text-red-600 hover:text-red-800 text-xs text-left"
+                              disabled={loading}
                             >
-                              Mark Complete
+                              Delete Review
                             </button>
-                          )}
+                          </div>
                         </td>
                       </tr>
                     );

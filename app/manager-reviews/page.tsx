@@ -219,6 +219,38 @@ export default function ManagerReviewsPage() {
     }
   };
 
+  const handleDeleteReview = async (reviewId: string, revieweeName: string) => {
+    if (!confirm(`Are you sure you want to delete the review for ${revieweeName}? This action cannot be undone.`)) {
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          managerEmail: email, 
+          action: 'delete', 
+          reviewId 
+        })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Review deleted successfully');
+        loadData();
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        const data = await response.json();
+        setMessage(data.error || '✗ Error deleting review');
+      }
+    } catch (error) {
+      setMessage('✗ Error deleting review');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!manager) return;
@@ -554,31 +586,42 @@ export default function ManagerReviewsPage() {
                               <td className="px-6 py-4">
                                 <ReviewStatusBadge status={review.status} />
                               </td>
-                              <td className="px-6 py-4 text-sm space-x-2">
-                                <button
-                                  onClick={() => router.push(`/review/${review.id}/manager`)}
-                                  className="text-purple-600 hover:text-purple-800 font-medium"
-                                >
-                                  {review.status === 'completed' ? 'View' : 'Edit Review'}
-                                </button>
-                                {review.status !== 'not-started' && (
+                              <td className="px-6 py-4 text-sm">
+                                <div className="flex flex-col gap-1">
+                                  <div className="space-x-2">
+                                    <button
+                                      onClick={() => router.push(`/review/${review.id}/manager`)}
+                                      className="text-purple-600 hover:text-purple-800 font-medium"
+                                    >
+                                      {review.status === 'completed' ? 'View' : 'Edit Review'}
+                                    </button>
+                                    {review.status !== 'not-started' && (
+                                      <button
+                                        onClick={() => handleChangeStatus(review.id, 'in-progress')}
+                                        className="text-orange-600 hover:text-orange-800 text-xs"
+                                        disabled={loading}
+                                      >
+                                        {review.status === 'completed' ? 'Reopen' : 'Mark In Progress'}
+                                      </button>
+                                    )}
+                                    {review.status !== 'not-started' && review.status !== 'in-progress' && (
+                                      <button
+                                        onClick={() => handleChangeStatus(review.id, 'not-started')}
+                                        className="text-gray-600 hover:text-gray-800 text-xs"
+                                        disabled={loading}
+                                      >
+                                        Reset
+                                      </button>
+                                    )}
+                                  </div>
                                   <button
-                                    onClick={() => handleChangeStatus(review.id, 'in-progress')}
-                                    className="text-orange-600 hover:text-orange-800 text-xs"
+                                    onClick={() => handleDeleteReview(review.id, reviewee.name)}
+                                    className="text-red-600 hover:text-red-800 text-xs text-left"
                                     disabled={loading}
                                   >
-                                    {review.status === 'completed' ? 'Reopen' : 'Mark In Progress'}
+                                    Delete Review
                                   </button>
-                                )}
-                                {review.status !== 'not-started' && review.status !== 'in-progress' && (
-                                  <button
-                                    onClick={() => handleChangeStatus(review.id, 'not-started')}
-                                    className="text-gray-600 hover:text-gray-800 text-xs"
-                                    disabled={loading}
-                                  >
-                                    Reset
-                                  </button>
-                                )}
+                                </div>
                               </td>
                             </tr>
                           );

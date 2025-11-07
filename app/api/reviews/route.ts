@@ -50,6 +50,28 @@ export async function POST(request: NextRequest) {
       }
       await createReview(review);
       return NextResponse.json({ success: true, review });
+    } else if (action === 'delete') {
+      const { reviewId } = body;
+      
+      // Verify permissions - managers can only delete reviews for their own reviewees
+      if (!isAdmin && managerId) {
+        const reviews = await getAllReviews();
+        const reviewToDelete = reviews.find(r => r.id === reviewId);
+        if (!reviewToDelete) {
+          return NextResponse.json({ error: 'Review not found' }, { status: 404 });
+        }
+        
+        const revieweesList = await getRevieweesList();
+        const reviewee = revieweesList.reviewees.find(r => r.id === reviewToDelete.revieweeId);
+        if (!reviewee || !reviewee.managerIds.includes(managerId)) {
+          return NextResponse.json({ error: 'Cannot delete review for reviewee not managed by you' }, { status: 403 });
+        }
+      }
+      
+      const reviews = await getAllReviews();
+      const filteredReviews = reviews.filter(r => r.id !== reviewId);
+      await saveAllReviews(filteredReviews);
+      return NextResponse.json({ success: true });
     } else if (action === 'update-status') {
       // Only admin can update status
       if (!isAdmin) {
