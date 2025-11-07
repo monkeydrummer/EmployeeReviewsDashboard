@@ -6,14 +6,37 @@ import { getCategoryRatingTextWithLevel, formatOverallScore, formatPeriod } from
 // Create styles
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    paddingTop: 90,
+    paddingBottom: 70,
+    paddingLeft: 30,
+    paddingRight: 30,
     fontSize: 10,
     fontFamily: 'Helvetica',
   },
+  letterheadHeader: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 20,
+    paddingBottom: 15,
+    paddingLeft: 30,
+    paddingRight: 30,
+    borderBottom: '3 solid #f97316', // Orange border matching Rocscience branding
+    backgroundColor: '#ffffff',
+  },
+  letterheadLogo: {
+    width: 180,
+    height: 50,
+    marginBottom: 5,
+  },
+  letterheadDivider: {
+    borderTop: '1 solid #e5e7eb',
+    marginTop: 10,
+  },
   header: {
     marginBottom: 20,
-    borderBottom: '2 solid #333',
-    paddingBottom: 15,
+    paddingBottom: 10,
   },
   logo: {
     width: 120,
@@ -132,13 +155,40 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: '#555',
   },
-  footer: {
+  letterheadFooter: {
     position: 'absolute',
-    bottom: 20,
-    left: 30,
-    right: 30,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingTop: 10,
+    paddingBottom: 15,
+    paddingLeft: 30,
+    paddingRight: 30,
+    borderTop: '2 solid #f97316', // Orange border
+    backgroundColor: '#ffffff',
+  },
+  footerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 7,
+    color: '#666',
+  },
+  footerLeft: {
+    flex: 1,
+  },
+  footerCenter: {
+    flex: 1,
     textAlign: 'center',
-    fontSize: 8,
+  },
+  footerRight: {
+    flex: 1,
+    textAlign: 'right',
+  },
+  pageNumber: {
+    fontSize: 7,
     color: '#999',
   },
 });
@@ -152,7 +202,16 @@ export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {/* Letterhead Header */}
+        <View style={styles.letterheadHeader} fixed>
+          <Image 
+            src="/images/rocscience-logo-Dark_1.jpg" 
+            style={styles.letterheadLogo}
+          />
+          <View style={styles.letterheadDivider} />
+        </View>
+
+        {/* Document Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Employee Performance Review</Text>
           <Text style={styles.subtitle}>Employee: {reviewee.name}</Text>
@@ -264,14 +323,34 @@ export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee }) => {
           </View>
         </View>
 
-        {/* Footer */}
-        <Text style={styles.footer}>
-          Confidential Employee Review Document | Generated {new Date().toLocaleDateString()}
-        </Text>
+        {/* Letterhead Footer */}
+        <View style={styles.letterheadFooter} fixed>
+          <View style={styles.footerContent}>
+            <View style={styles.footerLeft}>
+              <Text style={styles.footerText}>Employee Performance Review</Text>
+            </View>
+            <View style={styles.footerCenter}>
+              <Text style={styles.footerText}>Confidential Document</Text>
+            </View>
+            <View style={styles.footerRight}>
+              <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+                `Page ${pageNumber} of ${totalPages}`
+              )} />
+            </View>
+          </View>
+        </View>
       </Page>
 
       {/* Rating Definitions - Second Page */}
       <Page size="A4" style={styles.page}>
+        {/* Letterhead Header */}
+        <View style={styles.letterheadHeader} fixed>
+          <Image 
+            src="/images/rocscience-logo-Dark_1.jpg" 
+            style={styles.letterheadLogo}
+          />
+          <View style={styles.letterheadDivider} />
+        </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Rating Definitions</Text>
           <View style={styles.definitionsSection}>
@@ -286,9 +365,22 @@ export const ReviewPDF: React.FC<ReviewPDFProps> = ({ review, reviewee }) => {
           </View>
         </View>
 
-        <Text style={styles.footer}>
-          Confidential Employee Review Document | Generated {new Date().toLocaleDateString()}
-        </Text>
+        {/* Letterhead Footer */}
+        <View style={styles.letterheadFooter} fixed>
+          <View style={styles.footerContent}>
+            <View style={styles.footerLeft}>
+              <Text style={styles.footerText}>Employee Performance Review</Text>
+            </View>
+            <View style={styles.footerCenter}>
+              <Text style={styles.footerText}>Confidential Document</Text>
+            </View>
+            <View style={styles.footerRight}>
+              <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
+                `Page ${pageNumber} of ${totalPages}`
+              )} />
+            </View>
+          </View>
+        </View>
       </Page>
     </Document>
   );

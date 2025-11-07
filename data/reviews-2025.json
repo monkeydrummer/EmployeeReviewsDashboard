@@ -1,36 +1,6 @@
 {
   "reviews": [
     {
-      "id": "rev-2025-mid-001",
-      "revieweeId": "emp-001",
-      "period": "mid-year",
-      "year": 2025,
-      "status": "not-started",
-      "employeeCategoryRatings": "F1xTTg==",
-      "managerCategoryRatings": "F1xTTg==",
-      "employeeOverallScore": null,
-      "managerOverallScore": null,
-      "employeeComments": {},
-      "managerComments": {},
-      "employeeCareerDev": "",
-      "managerCareerDev": ""
-    },
-    {
-      "id": "rev-2025-mid-002",
-      "revieweeId": "emp-002",
-      "period": "mid-year",
-      "year": 2025,
-      "status": "not-started",
-      "employeeCategoryRatings": "F1xTTg==",
-      "managerCategoryRatings": "F1xTTg==",
-      "employeeOverallScore": null,
-      "managerOverallScore": null,
-      "employeeComments": {},
-      "managerComments": {},
-      "employeeCareerDev": "",
-      "managerCareerDev": ""
-    },
-    {
       "id": "rev-2025-end-year-emp-1762538834543-1762538846093",
       "revieweeId": "emp-1762538834543",
       "period": "end-year",
