@@ -559,7 +559,7 @@ export default function ManagerReviewsPage() {
                                   onClick={() => router.push(`/review/${review.id}/manager`)}
                                   className="text-purple-600 hover:text-purple-800 font-medium"
                                 >
-                                  {review.status === 'completed' ? 'View' : 'Complete Review'}
+                                  {review.status === 'completed' ? 'View' : 'Edit Review'}
                                 </button>
                                 {review.status !== 'not-started' && (
                                   <button

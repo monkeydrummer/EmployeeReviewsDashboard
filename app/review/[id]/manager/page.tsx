@@ -409,7 +409,7 @@ export default function ManagerReviewPage() {
               disabled={saving}
               className="flex-1 bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 disabled:bg-gray-400 font-medium"
             >
-              {saving ? 'Completing...' : 'Complete Review'}
+              {saving ? 'Submitting...' : 'Mark Complete'}
             </button>
           </div>
         )}
