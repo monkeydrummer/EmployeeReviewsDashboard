@@ -1,11 +1,10 @@
 {
   "managers": [
     {
-      "id": "mgr-001",
-      "name": "Jane Smith",
-      "email": "jane.smith@rocscience.com",
-      "title": "Engineering Manager"
+      "id": "mgr-1762538749387",
+      "name": "Jeremy Smith",
+      "email": "jeremy.smith@rocscience.com",
+      "title": "Senior Software Development Manager"
     }
   ]
 }
-

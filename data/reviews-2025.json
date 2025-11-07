@@ -6,8 +6,8 @@
       "period": "mid-year",
       "year": 2025,
       "status": "pending",
-      "employeeCategoryRatings": "ERcYFhITHhRXX1xT",
-      "managerCategoryRatings": "ERcYFhITHhRXX1xT",
+      "employeeCategoryRatings": "F1xTTg==",
+      "managerCategoryRatings": "F1xTTg==",
       "employeeOverallScore": null,
       "managerOverallScore": null,
       "employeeComments": {},
@@ -21,8 +21,23 @@
       "period": "mid-year",
       "year": 2025,
       "status": "pending",
-      "employeeCategoryRatings": "ERcYFhITHhRXX1xT",
-      "managerCategoryRatings": "ERcYFhITHhRXX1xT",
+      "employeeCategoryRatings": "F1xTTg==",
+      "managerCategoryRatings": "F1xTTg==",
+      "employeeOverallScore": null,
+      "managerOverallScore": null,
+      "employeeComments": {},
+      "managerComments": {},
+      "employeeCareerDev": "",
+      "managerCareerDev": ""
+    },
+    {
+      "id": "rev-2025-end-year-emp-1762538834543-1762538846093",
+      "revieweeId": "emp-1762538834543",
+      "period": "end-year",
+      "year": 2025,
+      "status": "pending",
+      "employeeCategoryRatings": "FxYpCwc+Ix0CPX9HKSFQCDsrSURTX0YbIA5GUgsiGRAsQCAJFS4zAilqdFlTYgofBzsIHQYDNR9ONVwDClcbGkxlSEJROgQKPA5cVAwkEl47CDBZATAfHVZnYFk+NzEfOj5UXQFWZwAsHBkQEyRVQXxxfwINDh9TCDIoUwR1KAk/AxUCF3pKQ352OF85JC0GBwMPD3QlEgIzPR8Ed2p6AlQqIQ86CRkQCjQdXj4mPAMHRUJZVmcHRStdJUMCPlwbKg9dBwEhERYRIhAP",
+      "managerCategoryRatings": "FxYpCwc+Ix0CPX9HKSFQCDsrSURTX0YbIA5GUgsiGRAsQCAJFS4zAilqdFlTYgofBzsIHQYDNR9ONVwDClcbGkxlSEJROgQKPA5cVAwkEl47CDBZATAfHVZnYFk+NzEfOj5UXQFWZwAsHBkQEyRVQXxxfwINDh9TCDIoUwR1KAk/AxUCF3pKQ352OF85JC0GBwMPD3QlEgIzPR8Ed2p6AlQqIQ86CRkQCjQdXj4mPAMHRUJZVmcHRStdJUMCPlwbKg9dBwEhERYRIhAP",
       "employeeOverallScore": null,
       "managerOverallScore": null,
       "employeeComments": {},
@@ -32,4 +47,3 @@
     }
   ]
 }
-
