@@ -91,13 +91,19 @@ export default function EmployeeReviewPage() {
     setMessage('');
     
     try {
+      const updatedReview = {
+        ...review,
+        status: review.status === 'not-started' ? 'in-progress' as const : review.status
+      };
+      
       const response = await fetch(`/api/review/${reviewId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ review, email })
+        body: JSON.stringify({ review: updatedReview, email })
       });
       
       if (response.ok) {
+        setReview(updatedReview);
         setMessage('✓ Changes saved successfully');
         setTimeout(() => setMessage(''), 3000);
       } else {
@@ -126,7 +132,7 @@ export default function EmployeeReviewPage() {
     try {
       const updatedReview = {
         ...review,
-        status: 'employee-submitted' as const
+        status: 'employee-completed' as const
       };
       
       const response = await fetch(`/api/review/${reviewId}`, {
@@ -218,7 +224,7 @@ export default function EmployeeReviewPage() {
               className="object-contain"
             />
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push(`/employee-reviews?email=${encodeURIComponent(email)}`)}
               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
               Home

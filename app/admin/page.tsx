@@ -252,7 +252,7 @@ export default function AdminPage() {
         revieweeId: newReview.revieweeId,
         period: newReview.period,
         year: newReview.year,
-        status: 'pending',
+        status: 'not-started',
         employeeCategoryRatings: initialRatings,
         managerCategoryRatings: initialRatings,
         employeeOverallScore: null,

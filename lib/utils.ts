@@ -95,11 +95,13 @@ export function formatOverallScore(score: number | null): string {
  */
 export function getStatusColor(status: string): string {
   switch (status) {
-    case "pending":
+    case "not-started":
       return "bg-gray-100 text-gray-800";
-    case "employee-submitted":
+    case "in-progress":
+      return "bg-yellow-100 text-yellow-800";
+    case "employee-completed":
       return "bg-blue-100 text-blue-800";
-    case "manager-submitted":
+    case "manager-completed":
       return "bg-purple-100 text-purple-800";
     case "completed":
       return "bg-green-100 text-green-800";
@@ -113,12 +115,14 @@ export function getStatusColor(status: string): string {
  */
 export function formatStatus(status: string): string {
   switch (status) {
-    case "pending":
-      return "Pending";
-    case "employee-submitted":
-      return "Employee Submitted";
-    case "manager-submitted":
-      return "Manager Submitted";
+    case "not-started":
+      return "Not Started";
+    case "in-progress":
+      return "In Progress";
+    case "employee-completed":
+      return "Employee Completed";
+    case "manager-completed":
+      return "Manager Completed";
     case "completed":
       return "Completed";
     default:

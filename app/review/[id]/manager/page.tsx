@@ -96,13 +96,31 @@ export default function ManagerReviewPage() {
     setMessage('');
     
     try {
+      // Check if all manager fields are filled to determine status
+      const allCategoriesRated = CATEGORIES.every(cat => review.managerCategoryRatings[cat.id] !== null);
+      const isComplete = allCategoriesRated && review.managerOverallScore !== null;
+      
+      let newStatus = review.status;
+      if (review.status === 'not-started' || review.status === 'in-progress') {
+        newStatus = 'in-progress';
+      }
+      if (isComplete && (review.status === 'not-started' || review.status === 'in-progress')) {
+        newStatus = 'manager-completed';
+      }
+      
+      const updatedReview = {
+        ...review,
+        status: newStatus
+      };
+      
       const response = await fetch(`/api/review/${reviewId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ review, email })
+        body: JSON.stringify({ review: updatedReview, email })
       });
       
       if (response.ok) {
+        setReview(updatedReview);
         setMessage('✓ Changes saved successfully');
         setTimeout(() => setMessage(''), 3000);
       } else {
@@ -224,7 +242,7 @@ export default function ManagerReviewPage() {
               className="object-contain"
             />
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push(`/manager-reviews?email=${encodeURIComponent(email)}`)}
               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
             >
               Home

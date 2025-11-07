@@ -155,6 +155,36 @@ export default function ManagerReviewsPage() {
     }
   };
 
+  const handleChangeStatus = async (reviewId: string, newStatus: 'in-progress') => {
+    if (!manager) return;
+    
+    setLoading(true);
+    try {
+      const review = reviews.find(r => r.id === reviewId);
+      if (!review) return;
+      
+      const updatedReview = { ...review, status: newStatus };
+      
+      const response = await fetch(`/api/review/${reviewId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review: updatedReview, email })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Status updated');
+        loadData();
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage('✗ Error updating status');
+      }
+    } catch (error) {
+      setMessage('✗ Error updating status');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!manager) return;
@@ -171,7 +201,7 @@ export default function ManagerReviewsPage() {
         revieweeId: newReview.revieweeId,
         period: newReview.period,
         year: newReview.year,
-        status: 'pending',
+        status: 'not-started',
         employeeCategoryRatings: initialRatings,
         managerCategoryRatings: initialRatings,
         employeeOverallScore: null,
@@ -478,13 +508,22 @@ export default function ManagerReviewsPage() {
                         <td className="px-6 py-4">
                           <ReviewStatusBadge status={review.status} />
                         </td>
-                        <td className="px-6 py-4 text-sm">
+                        <td className="px-6 py-4 text-sm space-x-2">
                           <button
                             onClick={() => router.push(`/review/${review.id}/manager`)}
                             className="text-purple-600 hover:text-purple-800 font-medium"
                           >
                             {review.status === 'completed' ? 'View' : 'Complete Review'}
                           </button>
+                          {review.status !== 'not-started' && review.status !== 'completed' && (
+                            <button
+                              onClick={() => handleChangeStatus(review.id, 'in-progress')}
+                              className="text-gray-600 hover:text-gray-800 text-xs"
+                              disabled={loading}
+                            >
+                              Mark In Progress
+                            </button>
+                          )}
                         </td>
                       </tr>
                     );

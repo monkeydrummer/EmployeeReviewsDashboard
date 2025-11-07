@@ -3,7 +3,7 @@ export type CategoryRating = "unsatisfactory" | "needs-improvement" | "delivers"
 
 export type ReviewPeriod = "mid-year" | "end-year";
 
-export type ReviewStatus = "pending" | "employee-submitted" | "manager-submitted" | "completed";
+export type ReviewStatus = "not-started" | "in-progress" | "employee-completed" | "manager-completed" | "completed";
 
 // Manager
 export interface Manager {
