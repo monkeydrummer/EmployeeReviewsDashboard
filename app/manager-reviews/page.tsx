@@ -3,9 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Review, Reviewee, Manager, CATEGORIES } from '@/lib/types';
+import { Review, Reviewee, Manager, CATEGORIES, ReviewStatus } from '@/lib/types';
 import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 import { formatPeriod } from '@/lib/utils';
+
+interface ReviewGroup {
+  period: 'mid-year' | 'end-year';
+  year: number;
+  reviews: Review[];
+}
 
 export default function ManagerReviewsPage() {
   const router = useRouter();
@@ -15,6 +21,7 @@ export default function ManagerReviewsPage() {
   const [manager, setManager] = useState<Manager | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewees, setReviewees] = useState<Reviewee[]>([]);
+  const [reviewGroups, setReviewGroups] = useState<ReviewGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   
@@ -77,6 +84,33 @@ export default function ManagerReviewsPage() {
       );
       
       setReviews(managedReviews);
+      
+      // Group reviews by period/year
+      if (managedReviews.length > 0) {
+        const groups: Map<string, ReviewGroup> = new Map();
+        
+        managedReviews.forEach((review: Review) => {
+          const key = `${review.year}-${review.period}`;
+          if (!groups.has(key)) {
+            groups.set(key, {
+              period: review.period,
+              year: review.year,
+              reviews: []
+            });
+          }
+          groups.get(key)!.reviews.push(review);
+        });
+        
+        // Sort by year (desc) then period (end-year first)
+        const sortedGroups = Array.from(groups.values()).sort((a, b) => {
+          if (a.year !== b.year) return b.year - a.year;
+          return a.period === 'end-year' ? -1 : 1;
+        });
+        
+        setReviewGroups(sortedGroups);
+      } else {
+        setReviewGroups([]);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
       setMessage('Error loading reviews');
@@ -155,7 +189,7 @@ export default function ManagerReviewsPage() {
     }
   };
 
-  const handleChangeStatus = async (reviewId: string, newStatus: 'in-progress') => {
+  const handleChangeStatus = async (reviewId: string, newStatus: ReviewStatus) => {
     if (!manager) return;
     
     setLoading(true);
@@ -481,64 +515,82 @@ export default function ManagerReviewsPage() {
             </form>
           )}
 
-          {reviews.length > 0 && (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Employee</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Title</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Period</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Year</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {reviews.map((review) => {
-                    const reviewee = reviewees.find(r => r.id === review.revieweeId);
-                    if (!reviewee) return null;
-                    
-                    return (
-                      <tr key={review.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                          {reviewee.name}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {reviewee.title}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {formatPeriod(review.period)}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">
-                          {review.year}
-                        </td>
-                        <td className="px-6 py-4">
-                          <ReviewStatusBadge status={review.status} />
-                        </td>
-                        <td className="px-6 py-4 text-sm space-x-2">
-                          <button
-                            onClick={() => router.push(`/review/${review.id}/manager`)}
-                            className="text-purple-600 hover:text-purple-800 font-medium"
-                          >
-                            {review.status === 'completed' ? 'View' : 'Complete Review'}
-                          </button>
-                          {review.status !== 'not-started' && review.status !== 'completed' && (
-                            <button
-                              onClick={() => handleChangeStatus(review.id, 'in-progress')}
-                              className="text-gray-600 hover:text-gray-800 text-xs"
-                              disabled={loading}
-                            >
-                              Mark In Progress
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          {reviewGroups.length > 0 ? (
+            <div className="space-y-8">
+              {reviewGroups.map((group) => (
+                <div key={`${group.year}-${group.period}`} className="border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4">
+                    <h3 className="text-xl font-bold text-white">
+                      {formatPeriod(group.period)} {group.year}
+                    </h3>
+                    <p className="text-purple-100 text-sm mt-1">
+                      {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Employee</th>
+                          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Title</th>
+                          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Status</th>
+                          <th className="px-6 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {group.reviews.map((review) => {
+                          const reviewee = reviewees.find(r => r.id === review.revieweeId);
+                          if (!reviewee) return null;
+                          
+                          return (
+                            <tr key={review.id} className="hover:bg-gray-50">
+                              <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                {reviewee.name}
+                              </td>
+                              <td className="px-6 py-4 text-sm text-gray-600">
+                                {reviewee.title}
+                              </td>
+                              <td className="px-6 py-4">
+                                <ReviewStatusBadge status={review.status} />
+                              </td>
+                              <td className="px-6 py-4 text-sm space-x-2">
+                                <button
+                                  onClick={() => router.push(`/review/${review.id}/manager`)}
+                                  className="text-purple-600 hover:text-purple-800 font-medium"
+                                >
+                                  {review.status === 'completed' ? 'View' : 'Complete Review'}
+                                </button>
+                                {review.status !== 'not-started' && (
+                                  <button
+                                    onClick={() => handleChangeStatus(review.id, 'in-progress')}
+                                    className="text-orange-600 hover:text-orange-800 text-xs"
+                                    disabled={loading}
+                                  >
+                                    {review.status === 'completed' ? 'Reopen' : 'Mark In Progress'}
+                                  </button>
+                                )}
+                                {review.status !== 'not-started' && review.status !== 'in-progress' && (
+                                  <button
+                                    onClick={() => handleChangeStatus(review.id, 'not-started')}
+                                    className="text-gray-600 hover:text-gray-800 text-xs"
+                                    disabled={loading}
+                                  >
+                                    Reset
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
+          ) : reviews.length === 0 && (
+            <p className="text-gray-600 text-center py-8">No reviews yet. Create your first review above.</p>
           )}
         </section>
       </main>
