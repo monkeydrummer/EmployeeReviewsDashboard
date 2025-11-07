@@ -177,6 +177,30 @@ export default function AdminPage() {
     }
   };
 
+  const handleResetManagerPassword = async (managerEmail: string, managerName: string) => {
+    if (!confirm(`Reset password for ${managerName}? They will need to set up a new password on next login.`)) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/managers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, action: 'reset-password', email: managerEmail })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Password reset successfully');
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage('✗ Error resetting password');
+      }
+    } catch (error) {
+      setMessage('✗ Error resetting password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddReviewee = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -232,6 +256,30 @@ export default function AdminPage() {
       }
     } catch (error) {
       setMessage('✗ Error deleting reviewee');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetEmployeePassword = async (employeeEmail: string, employeeName: string) => {
+    if (!confirm(`Reset password for ${employeeName}? They will need to set up a new password on next login.`)) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch('/api/reviewees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password, action: 'reset-password', email: employeeEmail })
+      });
+      
+      if (response.ok) {
+        setMessage('✓ Password reset successfully');
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage('✗ Error resetting password');
+      }
+    } catch (error) {
+      setMessage('✗ Error resetting password');
     } finally {
       setLoading(false);
     }
@@ -478,7 +526,13 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-sm text-gray-900">{manager.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{manager.email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{manager.title}</td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-3 text-sm space-x-2">
+                      <button
+                        onClick={() => handleResetManagerPassword(manager.email, manager.name)}
+                        className="text-orange-600 hover:text-orange-800"
+                      >
+                        Reset Password
+                      </button>
                       <button
                         onClick={() => handleDeleteManager(manager.id)}
                         className="text-red-600 hover:text-red-800"
@@ -597,7 +651,13 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-sm text-gray-600">{reviewee.email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{reviewee.title}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{getManagerNames(reviewee.managerIds)}</td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-3 text-sm space-x-2">
+                      <button
+                        onClick={() => handleResetEmployeePassword(reviewee.email, reviewee.name)}
+                        className="text-orange-600 hover:text-orange-800"
+                      >
+                        Reset Password
+                      </button>
                       <button
                         onClick={() => handleDeleteReviewee(reviewee.id)}
                         className="text-red-600 hover:text-red-800"

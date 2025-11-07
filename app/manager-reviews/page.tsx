@@ -273,12 +273,20 @@ export default function ManagerReviewsPage() {
               height={60}
               className="object-contain"
             />
-            <button
-              onClick={() => router.push('/')}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Logout
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => router.push(`/change-password?email=${encodeURIComponent(email)}&role=manager`)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              >
+                Change Password
+              </button>
+              <button
+                onClick={() => router.push('/')}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           </div>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Manager Dashboard</h1>
