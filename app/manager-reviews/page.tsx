@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Review, Reviewee, Manager, CATEGORIES, ReviewStatus } from '@/lib/types';
 import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 import { formatPeriod } from '@/lib/utils';
+import { Eye, FileText, RefreshCw, Trash2, Edit, UserMinus } from 'lucide-react';
 
 interface ReviewGroup {
   period: 'mid-year' | 'end-year';
@@ -40,6 +41,7 @@ export default function ManagerReviewsPage() {
     period: 'mid-year' as 'mid-year' | 'end-year',
     year: new Date().getFullYear()
   });
+  const [exportingGroup, setExportingGroup] = useState<string | null>(null);
 
   useEffect(() => {
     if (email) {
@@ -303,6 +305,47 @@ export default function ManagerReviewsPage() {
     }
   };
 
+  const handleExportGroupPDFs = async (period: 'mid-year' | 'end-year', year: number) => {
+    const groupKey = `${year}-${period}`;
+    setExportingGroup(groupKey);
+    
+    try {
+      const response = await fetch('/api/reviews/export-group', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          managerEmail: email,
+          period,
+          year
+        })
+      });
+      
+      if (response.ok) {
+        // Download the ZIP file
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Reviews-${period}-${year}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        setMessage('✓ PDFs exported successfully');
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        const data = await response.json();
+        setMessage(data.error || '✗ Error exporting PDFs');
+      }
+    } catch (error) {
+      console.error('Error exporting PDFs:', error);
+      setMessage('✗ Error exporting PDFs');
+    } finally {
+      setExportingGroup(null);
+    }
+  };
+
   if (loading && !manager) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
@@ -423,7 +466,7 @@ export default function ManagerReviewsPage() {
                   disabled={loading}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
                 >
-                  Add Team Member
+                  Save
                 </button>
                 <button
                   type="button"
@@ -455,8 +498,12 @@ export default function ManagerReviewsPage() {
                     <td className="px-4 py-3 text-sm">
                       <button
                         onClick={() => handleDeleteReviewee(reviewee.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                        style={{ backgroundColor: '#dc2626' }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
                       >
+                        <UserMinus size={16} />
                         Remove
                       </button>
                     </td>
@@ -549,15 +596,39 @@ export default function ManagerReviewsPage() {
 
           {reviewGroups.length > 0 ? (
             <div className="space-y-8">
-              {reviewGroups.map((group) => (
-                <div key={`${group.year}-${group.period}`} className="border border-gray-200 rounded-lg overflow-hidden">
+              {reviewGroups.map((group) => {
+                const groupKey = `${group.year}-${group.period}`;
+                const isExporting = exportingGroup === groupKey;
+                
+                return (
+                <div key={groupKey} className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
-                    <h3 className="text-xl font-bold text-white">
-                      {formatPeriod(group.period)} {group.year}
-                    </h3>
-                    <p className="text-orange-50 text-sm mt-1">
-                      {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
-                    </p>
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-xl font-bold text-white">
+                          {formatPeriod(group.period)} {group.year}
+                        </h3>
+                        <p className="text-orange-50 text-sm mt-1">
+                          {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleExportGroupPDFs(group.period, group.year)}
+                        disabled={isExporting}
+                        className="bg-white text-orange-600 px-4 py-2 rounded-lg hover:bg-orange-50 transition-colors font-medium disabled:bg-gray-200 disabled:text-gray-500 flex items-center gap-2"
+                      >
+                        {isExporting ? (
+                          <>
+                            <span className="animate-spin">⏳</span>
+                            Exporting...
+                          </>
+                        ) : (
+                          <>
+                            📦 Export All PDFs
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="overflow-x-auto">
@@ -587,45 +658,61 @@ export default function ManagerReviewsPage() {
                                 <ReviewStatusBadge status={review.status} />
                               </td>
                               <td className="px-6 py-4 text-sm">
-                                <div className="flex flex-col gap-1">
-                                  <div className="space-x-2">
+                                <div className="flex flex-wrap gap-2 justify-between items-center">
+                                  <div className="flex flex-wrap gap-2">
                                     <button
                                       onClick={() => router.push(`/review/${review.id}/manager`)}
-                                      className="text-purple-600 hover:text-purple-800 font-medium"
+                                      className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                                      style={{ backgroundColor: '#9333ea' }}
+                                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#7e22ce'}
+                                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#9333ea'}
                                     >
-                                      {review.status === 'completed' ? 'View' : 'Edit Review'}
+                                      {review.status === 'completed' ? (
+                                        <>
+                                          <Eye size={16} />
+                                          View
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Edit size={16} />
+                                          Edit
+                                        </>
+                                      )}
                                     </button>
                                     <button
                                       onClick={() => window.open(`/api/review/${review.id}/pdf`, '_blank')}
-                                      className="text-blue-600 hover:text-blue-800 text-xs"
+                                      className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                                      style={{ backgroundColor: '#2563eb' }}
+                                      onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                                      onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
                                     >
+                                      <FileText size={16} />
                                       Export PDF
                                     </button>
-                                    {review.status !== 'not-started' && (
-                                      <button
-                                        onClick={() => handleChangeStatus(review.id, 'in-progress')}
-                                        className="text-orange-600 hover:text-orange-800 text-xs"
-                                        disabled={loading}
-                                      >
-                                        {review.status === 'completed' ? 'Reopen' : 'Mark In Progress'}
-                                      </button>
-                                    )}
-                                    {review.status !== 'not-started' && review.status !== 'in-progress' && (
+                                    {review.status === 'completed' && (
                                       <button
                                         onClick={() => handleChangeStatus(review.id, 'not-started')}
-                                        className="text-gray-600 hover:text-gray-800 text-xs"
+                                        className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{ backgroundColor: '#6b7280' }}
+                                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#4b5563'}
+                                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#6b7280'}
                                         disabled={loading}
                                       >
+                                        <RefreshCw size={16} />
                                         Reset
                                       </button>
                                     )}
                                   </div>
                                   <button
                                     onClick={() => handleDeleteReview(review.id, reviewee.name)}
-                                    className="text-red-600 hover:text-red-800 text-xs text-left"
+                                    className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    style={{ backgroundColor: '#dc2626' }}
+                                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
                                     disabled={loading}
                                   >
-                                    Delete Review
+                                    <Trash2 size={16} />
+                                    Delete
                                   </button>
                                 </div>
                               </td>
@@ -636,7 +723,8 @@ export default function ManagerReviewsPage() {
                     </table>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           ) : reviews.length === 0 && (
             <p className="text-gray-600 text-center py-8">No reviews yet. Create your first review above.</p>

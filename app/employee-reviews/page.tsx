@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Review, Reviewee } from '@/lib/types';
 import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 import { formatPeriod } from '@/lib/utils';
+import { Eye, Edit } from 'lucide-react';
 
 export default function EmployeeReviewsPage() {
   const router = useRouter();
@@ -150,9 +151,22 @@ export default function EmployeeReviewsPage() {
                     <td className="px-6 py-4 text-sm">
                       <button
                         onClick={() => router.push(`/review/${review.id}/employee`)}
-                        className="text-green-600 hover:text-green-800 font-medium"
+                        className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                        style={{ backgroundColor: '#16a34a' }}
+                        onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#15803d'}
+                        onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#16a34a'}
                       >
-                        {review.status === 'pending' ? 'Start Review' : 'View Review'}
+                        {review.status === 'pending' ? (
+                          <>
+                            <Edit size={16} />
+                            Start Review
+                          </>
+                        ) : (
+                          <>
+                            <Eye size={16} />
+                            View Review
+                          </>
+                        )}
                       </button>
                     </td>
                   </tr>

@@ -7,6 +7,7 @@ import { verifyAdminPassword } from '@/lib/auth';
 import { Review, Reviewee, Manager, CATEGORIES } from '@/lib/types';
 import ReviewStatusBadge from '@/components/ReviewStatusBadge';
 import { formatPeriod } from '@/lib/utils';
+import { Eye, Trash2, KeyRound, CheckCircle } from 'lucide-react';
 
 interface ReviewGroup {
   period: 'mid-year' | 'end-year';
@@ -610,19 +611,29 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-sm text-gray-900">{manager.name}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{manager.email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{manager.title}</td>
-                    <td className="px-4 py-3 text-sm space-x-2">
-                      <button
-                        onClick={() => handleResetManagerPassword(manager.email, manager.name)}
-                        className="text-orange-600 hover:text-orange-800"
-                      >
-                        Reset Password
-                      </button>
-                      <button
-                        onClick={() => handleDeleteManager(manager.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </button>
+                    <td className="px-4 py-3 text-sm">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => handleResetManagerPassword(manager.email, manager.name)}
+                          className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                          style={{ backgroundColor: '#f97316' }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ea580c'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f97316'}
+                        >
+                          <KeyRound size={16} />
+                          Reset Password
+                        </button>
+                        <button
+                          onClick={() => handleDeleteManager(manager.id)}
+                          className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                          style={{ backgroundColor: '#dc2626' }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                        >
+                          <Trash2 size={16} />
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -790,19 +801,29 @@ export default function AdminPage() {
                     <td className="px-4 py-3 text-sm text-gray-600">{reviewee.email}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{reviewee.title}</td>
                     <td className="px-4 py-3 text-sm text-gray-600">{getManagerNames(reviewee.managerIds)}</td>
-                    <td className="px-4 py-3 text-sm space-x-2">
-                      <button
-                        onClick={() => handleResetEmployeePassword(reviewee.email, reviewee.name)}
-                        className="text-orange-600 hover:text-orange-800"
-                      >
-                        Reset Password
-                      </button>
-                      <button
-                        onClick={() => handleDeleteReviewee(reviewee.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </button>
+                    <td className="px-4 py-3 text-sm">
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => handleResetEmployeePassword(reviewee.email, reviewee.name)}
+                          className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                          style={{ backgroundColor: '#f97316' }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#ea580c'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#f97316'}
+                        >
+                          <KeyRound size={16} />
+                          Reset Password
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReviewee(reviewee.id)}
+                          className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                          style={{ backgroundColor: '#dc2626' }}
+                          onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                          onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                        >
+                          <Trash2 size={16} />
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -907,29 +928,39 @@ export default function AdminPage() {
                           <ReviewStatusBadge status={review.status} />
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <div className="flex flex-col gap-1">
-                            <div className="space-x-2">
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              onClick={() => router.push(`/review/${review.id}/view`)}
+                              className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                              style={{ backgroundColor: '#2563eb' }}
+                              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                            >
+                              <Eye size={16} />
+                              View
+                            </button>
+                            {review.status !== 'completed' && (
                               <button
-                                onClick={() => router.push(`/review/${review.id}/view`)}
-                                className="text-blue-600 hover:text-blue-800"
+                                onClick={() => handleMarkCompleted(review.id)}
+                                className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm"
+                                style={{ backgroundColor: '#16a34a' }}
+                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#15803d'}
+                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#16a34a'}
                               >
-                                View
+                                <CheckCircle size={16} />
+                                Mark Complete
                               </button>
-                              {review.status !== 'completed' && (
-                                <button
-                                  onClick={() => handleMarkCompleted(review.id)}
-                                  className="text-green-600 hover:text-green-800"
-                                >
-                                  Mark Complete
-                                </button>
-                              )}
-                            </div>
+                            )}
                             <button
                               onClick={() => handleDeleteReview(review.id, reviewee?.name || 'Unknown')}
-                              className="text-red-600 hover:text-red-800 text-xs text-left"
+                              className="inline-flex items-center gap-2 px-3 py-2 text-white rounded-md transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                              style={{ backgroundColor: '#dc2626' }}
+                              onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#b91c1c'}
+                              onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
                               disabled={loading}
                             >
-                              Delete Review
+                              <Trash2 size={16} />
+                              Delete
                             </button>
                           </div>
                         </td>
