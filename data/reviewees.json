@@ -19,12 +19,851 @@
       ]
     },
     {
-      "id": "emp-1762789931631",
-      "name": "Carter Commish",
+      "id": "emp-1762545151387-0",
+      "name": "Alireza Afkhami",
+      "email": "alireza.afkhami@rocscience.com",
+      "title": "Sr. Director of Web Applications",
+      "managerIds": [
+        "mgr-1762545151387-13"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-1",
+      "name": "Clarissa Aguiar",
+      "email": "clarissa.aguiar@rocscience.com",
+      "title": "Geotechnical Sales Engineer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-2",
+      "name": "Raina Al Madanat",
+      "email": "raina.madanat@rocscience.com",
+      "title": "Sales Support Analyst",
+      "managerIds": [
+        "mgr-1762545151387-59"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-3",
+      "name": "Ahmed Al-Mufty",
+      "email": "ahmed.mufty@rocscience.com",
+      "title": "Sr. Geomechanics Specialist",
+      "managerIds": [
+        "mgr-1762545151387-22"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-4",
+      "name": "John Angelou",
+      "email": "john.angelou@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-27"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-6",
+      "name": "Alireza Azami",
+      "email": "alireza.azami@rocscience.com",
+      "title": "Director of Research",
+      "managerIds": [
+        "mgr-1762545151387-22"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-7",
+      "name": "Robert Bradford",
+      "email": "robert.bradford@rocscience.com",
+      "title": "Growth Strategy & Operations Manager",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-8",
+      "name": "Minh Bui",
+      "email": "minh.bui@vcteck.com",
+      "title": "Web Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-9",
+      "name": "Seok Hyeon Chai",
+      "email": "steve.chai@rocscience.com",
+      "title": "Geotechnical AI Manager",
+      "managerIds": [
+        "mgr-1762545151387-57"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-10",
+      "name": "Ahmad Cheheiber",
+      "email": "ahmad.cheheiber@rocscience.com",
+      "title": "IT & Systems Specialist",
+      "managerIds": [
+        "mgr-1762545151387-57"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-11",
+      "name": "Sofia Cheheiber",
+      "email": "sofia.melnychenko@rocscience.com",
+      "title": "Financial Support Administrator",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-12",
+      "name": "Carter Comish",
       "email": "carter.comish@rocscience.com",
+      "title": "Geotechnical Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-13",
+      "name": "Brent Corkum",
+      "email": "brent.corkum@rocscience.com",
+      "title": "Chief Technology Officer",
+      "managerIds": [
+        "mgr-1762545151388-62"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-14",
+      "name": "Jessica Curran",
+      "email": "jessica.curran@rocscience.com",
+      "title": "Director of Global Corporate Integration",
+      "managerIds": [
+        "mgr-1762545151387-59"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-16",
+      "name": "Kien Dang",
+      "email": "kien.dang@rocscience.com",
+      "title": "Director of Global Technical Development",
+      "managerIds": [
+        "mgr-1762545151387-13"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-17",
+      "name": "Trung Dang",
+      "email": "trung.dang@vcteck.com",
+      "title": "C++ Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-18",
+      "name": "Raul Demarini",
+      "email": "raul.demarini@rocscience.com",
+      "title": "Director, Rocscience South America",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-19",
+      "name": "Luca Duran",
+      "email": "luca.duran@rocscience.com",
       "title": "Software Developer",
       "managerIds": [
         "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-20",
+      "name": "Saiyona Ghosh",
+      "email": "saiyona.ghosh@rocscience.com",
+      "title": "Sr. Marketing Manager",
+      "managerIds": [
+        "mgr-1762545151388-62"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-21",
+      "name": "Eugene Greene",
+      "email": "eugene.greene@rocscience.com",
+      "title": "Sr. Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-22",
+      "name": "Reginald Hammah",
+      "email": "reginald.hammah@rocscience.com",
+      "title": "Chief Scientific Officer",
+      "managerIds": [
+        "mgr-1762545151388-62"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-23",
+      "name": "Caitlin Henshaw",
+      "email": "caitlin.henshaw@rocscience.com",
+      "title": "Documentation Lead",
+      "managerIds": [
+        "mgr-1762545151387-57"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-24",
+      "name": "Cuong Hua",
+      "email": "cuong.hua@vcteck.com",
+      "title": "C++ Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-25",
+      "name": "Zhanyu Huang",
+      "email": "grace.huang@rocscience.com",
+      "title": "Geotechnical Product Manager",
+      "managerIds": [
+        "mgr-1762545151387-16"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-26",
+      "name": "Bao Huynh",
+      "email": "bao.huynh@vcteck.com",
+      "title": "C++ Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-27",
+      "name": "Sina Javankhoshdel",
+      "email": "sina.javankhoshdel@rocscience.com",
+      "title": "Sr. Manager - LEM",
+      "managerIds": [
+        "mgr-1762545151387-13"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-28",
+      "name": "Lina Jazrawi",
+      "email": "lina.jazrawi@rocscience.com",
+      "title": "Business Analyst",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-29",
+      "name": "Danial Khan",
+      "email": "danial.khan@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-9"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-30",
+      "name": "Barnabas Liao",
+      "email": "barnabas.liao@rocscience.com",
+      "title": "Sr. Graphic Designer",
+      "managerIds": [
+        "mgr-1762545151387-20"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-31",
+      "name": "Ruici Liu",
+      "email": "rachel.liu@rocscience.com",
+      "title": "Geotechnical Project Manager",
+      "managerIds": [
+        "mgr-1762545151387-16"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-32",
+      "name": "Ted Liu",
+      "email": "ted.liu@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-33",
+      "name": "Mahsa Mafi",
+      "email": "mahsa.mafi@rocscience.com",
+      "title": "QA/QC Manager",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-34",
+      "name": "Viet Mai",
+      "email": "viet.mai@vcteck.com",
+      "title": "Web Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-35",
+      "name": "Alexandra Mann",
+      "email": "alexandra.mann@rocscience.com",
+      "title": "Account Manager",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-36",
+      "name": "Riana McBride",
+      "email": "riana.mcbride@rocscience.com",
+      "title": "Geotechnical Project Manager",
+      "managerIds": [
+        "mgr-1762545151387-27"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-37",
+      "name": "Alison McQuillian",
+      "email": "alison.mcquillan@rocscience.com",
+      "title": "Director, Rocscience Australia",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-38",
+      "name": "Igor Milevskiy",
+      "email": "igor.milevskiy@rocscience.com",
+      "title": "Sr. Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-16"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-39",
+      "name": "Anton Mlynczyk",
+      "email": "anton.mlynczyk@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762538749387",
+        "mgr-1762545151387-57"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-40",
+      "name": "Sina Moallemi",
+      "email": "sina.moallemi@rocscience.com",
+      "title": "Geotechnical Product Manager",
+      "managerIds": [
+        "mgr-1762545151387-16"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-41",
+      "name": "Karolin Morkos",
+      "email": "karolin.morkos@rocscience.com",
+      "title": "Account Manager",
+      "managerIds": [
+        "mgr-avi-tharmalingam"
+      ]
+    },
+    {
+      "id": "emp-1762545151387-42",
+      "name": "Binh Nguyen",
+      "email": "binh.nguyen@vcteck.com",
+      "title": "C# Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-43",
+      "name": "Hoang Nguyen",
+      "email": "hoang.nguyen@vcteck.com",
+      "title": "HPC Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-44",
+      "name": "Tri Nguyen",
+      "email": "tri.nguyen@vcteck.com",
+      "title": "Web Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151387-45",
+      "name": "Edward Opoku",
+      "email": "edward.opoku@rocscience.com",
+      "title": "Licensing Support Specialist",
+      "managerIds": [
+        "mgr-1762545151387-57"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-46",
+      "name": "Michelle Parlevliet",
+      "email": "michelle.parlevliet@rocscience.com",
+      "title": "Web Content Developer",
+      "managerIds": [
+        "mgr-1762545151387-23",
+        "mgr-1762545151387-9"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-47",
+      "name": "Guido Perez Manfredini",
+      "email": "guido.perez@rocscience.com",
+      "title": "Chief Revenue Officer",
+      "managerIds": [
+        "mgr-1762545151388-62"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-48",
+      "name": "Andrea Ramirez",
+      "email": "andrea.ramirez@rocscience.com",
+      "title": "Academic Sales Specialist",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-49",
+      "name": "Anthony Salvalaggio",
+      "email": "anthony.salvalaggio@rocscience.com",
+      "title": "Sales Operations",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-50",
+      "name": "Cristian Salvalaggio",
+      "email": "cristian.salvalaggio@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-27"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-51",
+      "name": "William Sati",
+      "email": "william.sati@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762538749387",
+        "mgr-1762545151387-57"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-52",
+      "name": "Arnav Singh",
+      "email": "arnav.singh@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-53",
+      "name": "Jeremy Smith",
+      "email": "jeremy.smith@rocscience.com",
+      "title": "Sr. Manager - Software Development",
+      "managerIds": [
+        "mgr-1762545151387-57"
+      ],
+      "hashedPassword": "60cc1d63ea27833d9e5002b01647816a:f5907902b9d1e527727fdee41fc2acc56e51de090e2da3ad18a45699f9001469b1124132c46f3402ba72173bc5d049c60e7795e45c08b5c42b6c5ca043cf1d0a"
+    },
+    {
+      "id": "emp-1762545151388-54",
+      "name": "Evan Stevenson",
+      "email": "evan.stevenson@rocscience.com",
+      "title": "Director of Global Business Integration",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-55",
+      "name": "Rema Strong",
+      "email": "rima.strong@rocscience.com",
+      "title": "Executive Office Coordinator",
+      "managerIds": [
+        "mgr-1762545151388-62"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-56",
+      "name": "Van hao Truong",
+      "email": "hao.truong@vcteck.com",
+      "title": "C++ Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151388-57",
+      "name": "Damir Valiulin",
+      "email": "damir.valiulin@rocscience.com",
+      "title": "Sr. Director of Software Development",
+      "managerIds": [
+        "mgr-1762545151387-13"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-58",
+      "name": "Man Ho Daniel Wai",
+      "email": "daniel.wai@rocscience.com",
+      "title": "Geotechnical Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-16"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-59",
+      "name": "Dwayne Walker",
+      "email": "dwayne.walker@rocscience.com",
+      "title": "Chief Financial Officer",
+      "managerIds": [
+        "mgr-1762545151388-62"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-60",
+      "name": "Eric Wang",
+      "email": "eric.wang@rocscience.com",
+      "title": "Geotechnical Project Manager",
+      "managerIds": [
+        "mgr-1762545151387-27"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-61",
+      "name": "Minggao Wei",
+      "email": "michael.wei@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-62",
+      "name": "Thamer Yacoub",
+      "email": "thamer.yacoub@rocscience.com",
+      "title": "CEO & President",
+      "managerIds": []
+    },
+    {
+      "id": "emp-1762545151388-63",
+      "name": "Beverly Yang",
+      "email": "beverly.yang@rocscience.com",
+      "title": "Geomechanics Specialist",
+      "managerIds": [
+        "mgr-1762545151387-13"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-64",
+      "name": "Tina Yee",
+      "email": "tina.yee@rocscience.com",
+      "title": "Sr. Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762545151388-65",
+      "name": "Christie Zhu",
+      "email": "christie.zhu@rocscience.com",
+      "title": "UX/UI Manager",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-1762546293696",
+      "name": "Alireza Azami",
+      "email": "alireza.azami@rocscience.com",
+      "title": "Director of Research",
+      "managerIds": [
+        "mgr-1762545151387-22"
+      ]
+    },
+    {
+      "id": "emp-1762546623612",
+      "name": "Leila Baninajarian",
+      "email": "leila.baninajarian@rocscience.com",
+      "title": "Geotechnical Application Engineer",
+      "managerIds": [
+        "mgr-1762545151387-6"
+      ]
+    },
+    {
+      "id": "emp-1762546657137",
+      "name": "Connor Burns",
+      "email": "connor.burns@rocscience.com",
+      "title": "Full-Stack Web Developer",
+      "managerIds": [
+        "mgr-1762545151387-2",
+        "mgr-liam-patterson"
+      ]
+    },
+    {
+      "id": "emp-1762546691958",
+      "name": "Mostapha Abdelaziz",
+      "email": "mostapha.abdelaziz@rocscience.com",
+      "title": "Full-Stack Web Developer",
+      "managerIds": [
+        "mgr-1762545151387-2",
+        "mgr-liam-patterson"
+      ]
+    },
+    {
+      "id": "emp-1762546776606",
+      "name": "Liam Patterson",
+      "email": "liam.patterson@rocscience.com",
+      "title": "Project Manager",
+      "managerIds": [
+        "mgr-1762545151387-2"
+      ]
+    },
+    {
+      "id": "emp-1762546817702",
+      "name": "Edwin Yang",
+      "email": "edwin.yang@rocscience.com",
+      "title": "Full-Stack Web Developer",
+      "managerIds": [
+        "mgr-1762545151387-2",
+        "mgr-liam-patterson"
+      ]
+    },
+    {
+      "id": "emp-1762546870023",
+      "name": "Yalin Dogan",
+      "email": "yalin.dogan@rocscience.com",
+      "title": "Geotechnical Product Manager",
+      "managerIds": [
+        "mgr-1762545151387-6"
+      ]
+    },
+    {
+      "id": "emp-1762546896892",
+      "name": "Armin Sariri",
+      "email": "armin.sariri@rocscience.com",
+      "title": "Geotechnical Application Engineer",
+      "managerIds": [
+        "mgr-1762545151387-6"
+      ]
+    },
+    {
+      "id": "emp-1762547036269",
+      "name": "Sherry Nguyen",
+      "email": "sherry.nguyen@rocscience.com",
+      "title": "Graphic Designer",
+      "managerIds": [
+        "mgr-ana-calvache"
+      ]
+    },
+    {
+      "id": "emp-missing-1",
+      "name": "Cassandra Mack",
+      "email": "cassandra.mack@rocscience.com",
+      "title": "PEY Software Developer",
+      "managerIds": []
+    },
+    {
+      "id": "emp-missing-10",
+      "name": "Maxim Al-Aghbar",
+      "email": "maxim.alaghbar@rocscience.com",
+      "title": "Account Executive",
+      "managerIds": [
+        "mgr-avi-tharmalingam"
+      ]
+    },
+    {
+      "id": "emp-missing-11",
+      "name": "Samantha Corkum",
+      "email": "samantha.corkum@rocscience.com",
+      "title": "Account Manager",
+      "managerIds": [
+        "mgr-avi-tharmalingam"
+      ]
+    },
+    {
+      "id": "emp-missing-12",
+      "name": "Carter Cummings",
+      "email": "carter.cummings@rocscience.com",
+      "title": "Account Executive",
+      "managerIds": [
+        "mgr-avi-tharmalingam"
+      ]
+    },
+    {
+      "id": "emp-missing-13",
+      "name": "Ali Chaudhry",
+      "email": "ali.chaudhry@rocscience.com",
+      "title": "Geotechnical Project Manager",
+      "managerIds": [
+        "mgr-1762545151387-9"
+      ]
+    },
+    {
+      "id": "emp-missing-14",
+      "name": "Harnake Saggu",
+      "email": "harnake.saggu@rocscience.com",
+      "title": "Sr. Financial Analyst",
+      "managerIds": [
+        "mgr-1762545151387-59"
+      ]
+    },
+    {
+      "id": "emp-missing-15",
+      "name": "Haneen Aziz",
+      "email": "haneen.aziz@rocscience.com",
+      "title": "International Sales Manager",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-missing-20",
+      "name": "Avi Tharmalingam",
+      "email": "avi.tharmalingam@rocscience.com",
+      "title": "Director of Sales, USCAN",
+      "managerIds": [
+        "mgr-1762545151387-47"
+      ]
+    },
+    {
+      "id": "emp-missing-21",
+      "name": "Zubash Akmal",
+      "email": "zubash.akmal@rocscience.com",
+      "title": "UX/UI Designer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
+    },
+    {
+      "id": "emp-missing-22",
+      "name": "Grace Hu",
+      "email": "grace.hu@rocscience.com",
+      "title": "Geotechnical Software Developer",
+      "managerIds": [
+        "mgr-sina-m"
+      ]
+    },
+    {
+      "id": "emp-missing-23",
+      "name": "Arsalan Jameei",
+      "email": "arsalan.jameei@rocscience.com",
+      "title": "Geomechanics FE Specialist",
+      "managerIds": [
+        "mgr-1762545151387-16"
+      ]
+    },
+    {
+      "id": "emp-missing-24",
+      "name": "David Ko",
+      "email": "david.ko@rocscience.com",
+      "title": "Geotechnical Project Manager",
+      "managerIds": [
+        "mgr-sina-m"
+      ]
+    },
+    {
+      "id": "emp-missing-25",
+      "name": "Sara Khosh",
+      "email": "sara.khosh@rocscience.com",
+      "title": "Business Analyst",
+      "managerIds": [
+        "mgr-maziar-partovi"
+      ]
+    },
+    {
+      "id": "emp-missing-26",
+      "name": "Jacob Raja",
+      "email": "jacob.raja@rocscience.com",
+      "title": "Salesforce Support",
+      "managerIds": [
+        "mgr-1762545151387-7"
+      ]
+    },
+    {
+      "id": "emp-missing-27",
+      "name": "Ana Calvache",
+      "email": "ana.calvache@rocscience.com",
+      "title": "Sr. Graphic Designer",
+      "managerIds": [
+        "mgr-1762545151387-20"
+      ]
+    },
+    {
+      "id": "emp-missing-28",
+      "name": "Siddhartha Kapali",
+      "email": "siddhartha.kapali@rocscience.com",
+      "title": "Technical Content Writer",
+      "managerIds": [
+        "mgr-1762545151387-20"
+      ]
+    },
+    {
+      "id": "emp-missing-29",
+      "name": "Amit Thanekar",
+      "email": "amit.thanekar@rocscience.com",
+      "title": "Marketing Specialist - Lead Generation",
+      "managerIds": [
+        "mgr-1762545151387-20"
+      ]
+    },
+    {
+      "id": "emp-missing-30",
+      "name": "Jake Yang",
+      "email": "jake.yang@rocscience.com",
+      "title": "Graphic Designer",
+      "managerIds": [
+        "mgr-1762545151387-30"
+      ]
+    },
+    {
+      "id": "emp-missing-31",
+      "name": "Abhi Sharma",
+      "email": "abhi.sharma@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-9"
+      ]
+    },
+    {
+      "id": "emp-missing-32",
+      "name": "Ivan Chen",
+      "email": "ivan.chen@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-9"
+      ]
+    },
+    {
+      "id": "emp-missing-33",
+      "name": "Armen Uzunian",
+      "email": "armen.uzunian@rocscience.com",
+      "title": "AI Developer",
+      "managerIds": [
+        "mgr-1762545151387-9"
+      ]
+    },
+    {
+      "id": "emp-missing-34",
+      "name": "Sogol Saghari",
+      "email": "sogol.saghari@rocscience.com",
+      "title": "PEY Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-27"
+      ]
+    },
+    {
+      "id": "emp-missing-35",
+      "name": "Liam Sy",
+      "email": "liam.sy@rocscience.com",
+      "title": "Geotechnical Software Developer",
+      "managerIds": [
+        "mgr-1762545151387-27"
+      ]
+    },
+    {
+      "id": "emp-missing-36",
+      "name": "Bitta Rana",
+      "email": "bitta.rana@rocscience.com",
+      "title": "Software Quality Engineer",
+      "managerIds": [
+        "mgr-1762545151387-33"
       ]
     }
   ]

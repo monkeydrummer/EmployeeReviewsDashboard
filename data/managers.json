@@ -4,8 +4,134 @@
       "id": "mgr-1762538749387",
       "name": "Jeremy Smith",
       "email": "jeremy.smith@rocscience.com",
-      "title": "Senior Software Development Manager",
+      "title": "Sr. Manager - Software Development",
       "hashedPassword": "5e273dcc2fd8299ecc1d926cb80d17d7:f62dfdcbd23645421aff07c675b7ee5904bde8de51e5588f2b107bc1433e1ee33195a2d302146cb03ad0e79382ddee52e5f91f0425d419a12748a5259a6dde72"
+    },
+    {
+      "id": "mgr-1762545151387-2",
+      "name": "Alireza Afkhami",
+      "email": "alireza.afkhami@rocscience.com",
+      "title": "Sr. Director of Web Applications"
+    },
+    {
+      "id": "mgr-1762545151387-6",
+      "name": "Alireza Azami",
+      "email": "alireza.azami@rocscience.com",
+      "title": "Director of Research"
+    },
+    {
+      "id": "mgr-1762545151387-13",
+      "name": "Brent Corkum",
+      "email": "brent.corkum@rocscience.com",
+      "title": "Chief Technology Officer"
+    },
+    {
+      "id": "mgr-1762545151387-57",
+      "name": "Damir Valiulin",
+      "email": "damir.valiulin@rocscience.com",
+      "title": "Sr. Director of Software Development"
+    },
+    {
+      "id": "mgr-1762545151387-16",
+      "name": "Kien Dang",
+      "email": "kien.dang@rocscience.com",
+      "title": "Director of Global Technical Development"
+    },
+    {
+      "id": "mgr-1762545151387-27",
+      "name": "Sina Javankhoshdel",
+      "email": "sina.javankhoshdel@rocscience.com",
+      "title": "Sr. Manager - LEM"
+    },
+    {
+      "id": "mgr-1762545151387-9",
+      "name": "Steve Chai",
+      "email": "steve.chai@rocscience.com",
+      "title": "Geotechnical AI Manager"
+    },
+    {
+      "id": "mgr-1762545151387-20",
+      "name": "Saiyona Ghosh",
+      "email": "saiyona.ghosh@rocscience.com",
+      "title": "Sr. Marketing Manager"
+    },
+    {
+      "id": "mgr-1762545151387-59",
+      "name": "Dwayne Walker",
+      "email": "dwayne.walker@rocscience.com",
+      "title": "Chief Financial Officer"
+    },
+    {
+      "id": "mgr-1762545151387-47",
+      "name": "Guido Perez Manfredini",
+      "email": "guido.perez@rocscience.com",
+      "title": "Chief Revenue Officer"
+    },
+    {
+      "id": "mgr-1762545151387-7",
+      "name": "Robert Bradford",
+      "email": "robert.bradford@rocscience.com",
+      "title": "Growth Strategy & Operations Manager"
+    },
+    {
+      "id": "mgr-1762545151387-22",
+      "name": "Reginald Hammah",
+      "email": "reginald.hammah@rocscience.com",
+      "title": "Chief Scientific Officer"
+    },
+    {
+      "id": "mgr-1762545151388-62",
+      "name": "Thamer Yacoub",
+      "email": "thamer.yacoub@rocscience.com",
+      "title": "CEO & President"
+    },
+    {
+      "id": "mgr-liam-patterson",
+      "name": "Liam Patterson",
+      "email": "liam.patterson@rocscience.com",
+      "title": "Project Manager"
+    },
+    {
+      "id": "mgr-ana-calvache",
+      "name": "Ana Calvache",
+      "email": "ana.calvache@rocscience.com",
+      "title": "Sr. Graphic Designer"
+    },
+    {
+      "id": "mgr-avi-tharmalingam",
+      "name": "Avi Tharmalingam",
+      "email": "avi.tharmalingam@rocscience.com",
+      "title": "Director of Sales, USCAN"
+    },
+    {
+      "id": "mgr-1762545151387-23",
+      "name": "Caitlin Henshaw",
+      "email": "caitlin.henshaw@rocscience.com",
+      "title": "Documentation Lead"
+    },
+    {
+      "id": "mgr-1762545151387-33",
+      "name": "Mahsa Mafi",
+      "email": "mahsa.mafi@rocscience.com",
+      "title": "QA/QC Manager"
+    },
+    {
+      "id": "mgr-sina-m",
+      "name": "Sina Moallemi",
+      "email": "sina.moallemi@rocscience.com",
+      "title": "Geotechnical Product Manager"
+    },
+    {
+      "id": "mgr-maziar-partovi",
+      "name": "Maziar Partovi",
+      "email": "maziar.partovi@rocscience.com",
+      "title": "Manager"
+    },
+    {
+      "id": "mgr-1762545151387-30",
+      "name": "Barnabas Liao",
+      "email": "barnabas.liao@rocscience.com",
+      "title": "Sr. Graphic Designer"
     }
   ]
 }
