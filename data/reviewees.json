@@ -17,6 +17,15 @@
       "managerIds": [
         "mgr-1762538749387"
       ]
+    },
+    {
+      "id": "emp-1762789931631",
+      "name": "Carter Commish",
+      "email": "carter.comish@rocscience.com",
+      "title": "Software Developer",
+      "managerIds": [
+        "mgr-1762538749387"
+      ]
     }
   ]
 }
