@@ -119,6 +119,47 @@ export async function POST(request: NextRequest) {
         }
       }
       revieweesList.reviewees = revieweesList.reviewees.filter(r => r.id !== reviewee.id);
+    } else if (action === 'assign-manager') {
+      // Batch assign a manager to multiple reviewees (admin only)
+      if (!isAdmin) {
+        return NextResponse.json({ error: 'Only admins can batch assign managers' }, { status: 403 });
+      }
+      
+      const { revieweeIds, managerId: newManagerId } = body;
+      
+      if (!revieweeIds || !Array.isArray(revieweeIds) || revieweeIds.length === 0) {
+        return NextResponse.json({ error: 'revieweeIds must be a non-empty array' }, { status: 400 });
+      }
+      
+      if (!newManagerId) {
+        return NextResponse.json({ error: 'managerId is required' }, { status: 400 });
+      }
+      
+      // Verify the manager exists
+      const managersList = await getManagersList();
+      const managerExists = managersList.managers.some(m => m.id === newManagerId);
+      if (!managerExists) {
+        return NextResponse.json({ error: 'Manager not found' }, { status: 404 });
+      }
+      
+      // Add the manager to each selected reviewee (if not already present)
+      let updatedCount = 0;
+      revieweesList.reviewees = revieweesList.reviewees.map(reviewee => {
+        if (revieweeIds.includes(reviewee.id)) {
+          if (!reviewee.managerIds.includes(newManagerId)) {
+            reviewee.managerIds.push(newManagerId);
+            updatedCount++;
+          }
+        }
+        return reviewee;
+      });
+      
+      await saveRevieweesList(revieweesList);
+      return NextResponse.json({ 
+        success: true, 
+        reviewees: revieweesList.reviewees,
+        message: `Manager assigned to ${updatedCount} employee(s)` 
+      });
     }
 
     await saveRevieweesList(revieweesList);

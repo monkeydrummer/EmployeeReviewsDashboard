@@ -45,6 +45,13 @@ export default function AdminPage() {
     managerIds: [] as string[]
   });
   
+  // Multi-select for manager assignment
+  const [selectedRevieweeIds, setSelectedRevieweeIds] = useState<string[]>([]);
+  const [assignManagerId, setAssignManagerId] = useState<string>('');
+  
+  // Filter by manager
+  const [filterManagerId, setFilterManagerId] = useState<string>('');
+  
   // Review creation
   const [showCreateReview, setShowCreateReview] = useState(false);
   const [newReview, setNewReview] = useState({
@@ -52,6 +59,13 @@ export default function AdminPage() {
     period: 'mid-year' as 'mid-year' | 'end-year',
     year: new Date().getFullYear()
   });
+
+  // BambooHR Sync
+  const [showSyncDialog, setShowSyncDialog] = useState(false);
+  const [syncChanges, setSyncChanges] = useState<any[]>([]);
+  const [selectedChanges, setSelectedChanges] = useState<Set<number>>(new Set());
+  const [syncing, setSyncing] = useState(false);
+  const [syncStats, setSyncStats] = useState<{ totalInBamboo: number; totalInSystem: number } | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -329,6 +343,68 @@ export default function AdminPage() {
     }
   };
 
+  const handleToggleSelectAll = () => {
+    if (selectedRevieweeIds.length === filteredReviewees.length && filteredReviewees.length > 0) {
+      setSelectedRevieweeIds([]);
+    } else {
+      setSelectedRevieweeIds(filteredReviewees.map(r => r.id));
+    }
+  };
+
+  const handleToggleSelectReviewee = (revieweeId: string) => {
+    setSelectedRevieweeIds(prev => 
+      prev.includes(revieweeId) 
+        ? prev.filter(id => id !== revieweeId)
+        : [...prev, revieweeId]
+    );
+  };
+
+  const handleAssignManager = async () => {
+    if (selectedRevieweeIds.length === 0) {
+      setMessage('✗ Please select at least one employee');
+      return;
+    }
+    
+    if (!assignManagerId) {
+      setMessage('✗ Please select a manager to assign');
+      return;
+    }
+
+    const manager = managers.find(m => m.id === assignManagerId);
+    if (!confirm(`Assign ${manager?.name} as manager to ${selectedRevieweeIds.length} selected employee(s)?`)) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch('/api/reviewees', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password,
+          action: 'assign-manager',
+          revieweeIds: selectedRevieweeIds,
+          managerId: assignManagerId
+        })
+      });
+
+      if (response.ok) {
+        setMessage(`✓ Manager assigned to ${selectedRevieweeIds.length} employee(s)`);
+        setSelectedRevieweeIds([]);
+        setAssignManagerId('');
+        fetchData();
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        const data = await response.json();
+        setMessage(data.error || '✗ Error assigning manager');
+      }
+    } catch (error) {
+      setMessage('✗ Error assigning manager');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateReview = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -443,6 +519,131 @@ export default function AdminPage() {
       .map(id => managers.find(m => m.id === id)?.name)
       .filter(Boolean)
       .join(', ') || 'No managers';
+  };
+
+  // Filter reviewees by selected manager
+  const filteredReviewees = filterManagerId === 'none'
+    ? reviewees.filter(r => r.managerIds.length === 0)
+    : filterManagerId
+    ? reviewees.filter(r => r.managerIds.includes(filterManagerId))
+    : reviewees;
+
+  const handleExportAllPDFs = async (group: ReviewGroup) => {
+    if (!confirm(`Export ${group.reviews.length} PDF(s) for ${formatPeriod(group.period)} ${group.year}?`)) {
+      return;
+    }
+    
+    setMessage(`📄 Exporting ${group.reviews.length} PDF files...`);
+    
+    // Export each review with a small delay to avoid browser blocking
+    for (let i = 0; i < group.reviews.length; i++) {
+      const review = group.reviews[i];
+      
+      // Open PDF in new window
+      setTimeout(() => {
+        window.open(`/api/review/${review.id}/pdf`, '_blank');
+      }, i * 300); // 300ms delay between each PDF
+    }
+    
+    setTimeout(() => {
+      setMessage(`✓ Exported ${group.reviews.length} PDF file(s)`);
+      setTimeout(() => setMessage(''), 3000);
+    }, group.reviews.length * 300 + 500);
+  };
+
+  const handleSyncWithBambooHR = async () => {
+    setSyncing(true);
+    setMessage('🔄 Fetching data from BambooHR...');
+    
+    try {
+      const response = await fetch('/api/sync/bamboohr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminEmail: 'admin' })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('BambooHR sync response:', data);
+        setSyncChanges(data.changes);
+        setSyncStats({
+          totalInBamboo: data.totalEmployeesInBamboo,
+          totalInSystem: data.totalEmployeesInSystem
+        });
+        // Select all changes by default
+        setSelectedChanges(new Set(data.changes.map((_: any, index: number) => index)));
+        setShowSyncDialog(true);
+        setMessage('');
+      } else {
+        console.error('BambooHR sync error:', data);
+        setMessage(`❌ Error: ${data.error}${data.details ? ' - ' + data.details : ''}`);
+      }
+    } catch (error: any) {
+      setMessage(`❌ Error: ${error.message}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleApplySyncChanges = async () => {
+    if (selectedChanges.size === 0) {
+      setMessage('⚠️ No changes selected');
+      return;
+    }
+
+    setSyncing(true);
+    setMessage(`🔄 Applying ${selectedChanges.size} change(s)...`);
+
+    try {
+      const changesToApply = Array.from(selectedChanges).map(index => syncChanges[index]);
+
+      const response = await fetch('/api/sync/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          adminEmail: 'admin',
+          changes: changesToApply
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage(`✓ Applied changes: ${data.added} added, ${data.updated} updated, ${data.removed} removed`);
+        setShowSyncDialog(false);
+        setSyncChanges([]);
+        setSelectedChanges(new Set());
+        setSyncStats(null);
+        // Refresh data
+        fetchData();
+        setTimeout(() => setMessage(''), 5000);
+      } else {
+        setMessage(`❌ Error: ${data.error}`);
+      }
+    } catch (error: any) {
+      setMessage(`❌ Error: ${error.message}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleToggleSyncChange = (index: number) => {
+    const newSelected = new Set(selectedChanges);
+    if (newSelected.has(index)) {
+      newSelected.delete(index);
+    } else {
+      newSelected.add(index);
+    }
+    setSelectedChanges(newSelected);
+  };
+
+  const handleToggleAllSyncChanges = () => {
+    if (selectedChanges.size === syncChanges.length) {
+      setSelectedChanges(new Set());
+    } else {
+      setSelectedChanges(new Set(syncChanges.map((_, index) => index)));
+    }
   };
 
   if (!isAuthenticated) {
@@ -637,6 +838,13 @@ export default function AdminPage() {
             <h2 className="text-2xl font-bold text-gray-900">Reviewees (Employees)</h2>
             <div className="flex gap-2">
               <button
+                onClick={handleSyncWithBambooHR}
+                disabled={syncing}
+                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 disabled:bg-gray-400 transition-colors"
+              >
+                {syncing ? '🔄 Syncing...' : '🔄 Sync with BambooHR'}
+              </button>
+              <button
                 onClick={() => setShowImportCSV(!showImportCSV)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
@@ -648,6 +856,43 @@ export default function AdminPage() {
               >
                 + Add Reviewee
               </button>
+            </div>
+          </div>
+
+          {/* Filter by Manager */}
+          <div className="mb-4 flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <label className="text-sm font-medium text-gray-700">Filter by Manager:</label>
+            <select
+              value={filterManagerId}
+              onChange={(e) => {
+                setFilterManagerId(e.target.value);
+                setSelectedRevieweeIds([]); // Clear selection when filter changes
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-lg flex-1 max-w-xs"
+            >
+              <option value="">All Employees ({reviewees.length})</option>
+              <option value="none">
+                No Manager ({reviewees.filter(r => r.managerIds.length === 0).length})
+              </option>
+              {managers.map((manager) => {
+                const count = reviewees.filter(r => r.managerIds.includes(manager.id)).length;
+                return (
+                  <option key={manager.id} value={manager.id}>
+                    {manager.name} ({count})
+                  </option>
+                );
+              })}
+            </select>
+            {filterManagerId && (
+              <button
+                onClick={() => setFilterManagerId('')}
+                className="text-sm text-blue-600 hover:text-blue-800"
+              >
+                Clear Filter
+              </button>
+            )}
+            <div className="ml-auto text-sm text-gray-600">
+              Showing {filteredReviewees.length} of {reviewees.length} employees
             </div>
           </div>
 
@@ -772,10 +1017,57 @@ export default function AdminPage() {
             </form>
           )}
 
+          {/* Manager Assignment for Selected Employees */}
+          {selectedRevieweeIds.length > 0 && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-gray-700">
+                  {selectedRevieweeIds.length} employee{selectedRevieweeIds.length !== 1 ? 's' : ''} selected
+                </span>
+                <div className="flex items-center gap-2 flex-1">
+                  <label className="text-sm font-medium text-gray-700">Assign Manager:</label>
+                  <select
+                    value={assignManagerId}
+                    onChange={(e) => setAssignManagerId(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg flex-1 max-w-xs"
+                  >
+                    <option value="">Select a manager...</option>
+                    {managers.map((manager) => (
+                      <option key={manager.id} value={manager.id}>
+                        {manager.name} ({manager.title})
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleAssignManager}
+                    disabled={!assignManagerId || loading}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 whitespace-nowrap"
+                  >
+                    Assign Manager
+                  </button>
+                  <button
+                    onClick={() => setSelectedRevieweeIds([])}
+                    className="text-gray-600 hover:text-gray-800 text-sm"
+                  >
+                    Clear Selection
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-2 text-left">
+                    <input
+                      type="checkbox"
+                      checked={selectedRevieweeIds.length === filteredReviewees.length && filteredReviewees.length > 0}
+                      onChange={handleToggleSelectAll}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                  </th>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
                   <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Title</th>
@@ -784,28 +1076,44 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {reviewees.map((reviewee) => (
-                  <tr key={reviewee.id} className="border-t">
-                    <td className="px-4 py-3 text-sm text-gray-900">{reviewee.name}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{reviewee.email}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{reviewee.title}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{getManagerNames(reviewee.managerIds)}</td>
-                    <td className="px-4 py-3 text-sm space-x-2">
-                      <button
-                        onClick={() => handleResetEmployeePassword(reviewee.email, reviewee.name)}
-                        className="text-orange-600 hover:text-orange-800"
-                      >
-                        Reset Password
-                      </button>
-                      <button
-                        onClick={() => handleDeleteReviewee(reviewee.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </button>
+                {filteredReviewees.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                      No employees found{filterManagerId ? ' for selected manager' : ''}
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  filteredReviewees.map((reviewee) => (
+                    <tr key={reviewee.id} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedRevieweeIds.includes(reviewee.id)}
+                          onChange={() => handleToggleSelectReviewee(reviewee.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">{reviewee.name}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{reviewee.email}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{reviewee.title}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{getManagerNames(reviewee.managerIds)}</td>
+                      <td className="px-4 py-3 text-sm space-x-2">
+                        <button
+                          onClick={() => handleResetEmployeePassword(reviewee.email, reviewee.name)}
+                          className="text-orange-600 hover:text-orange-800"
+                        >
+                          Reset Password
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReviewee(reviewee.id)}
+                          className="text-red-600 hover:text-red-800"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -874,12 +1182,22 @@ export default function AdminPage() {
         {reviewGroups.map((group) => (
           <section key={`${group.year}-${group.period}`} className="border border-gray-200 rounded-lg overflow-hidden shadow-md">
             <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
-              <h2 className="text-2xl font-bold text-white">
-                {formatPeriod(group.period)} Review {group.year}
-              </h2>
-              <p className="text-orange-50 text-sm mt-1">
-                {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
-              </p>
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-2xl font-bold text-white">
+                    {formatPeriod(group.period)} Review {group.year}
+                  </h2>
+                  <p className="text-orange-50 text-sm mt-1">
+                    {group.reviews.length} review{group.reviews.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleExportAllPDFs(group)}
+                  className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium backdrop-blur-sm"
+                >
+                  📄 Export All to PDF
+                </button>
+              </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -949,6 +1267,148 @@ export default function AdminPage() {
           </section>
         )}
       </main>
+
+      {/* BambooHR Sync Dialog */}
+      {showSyncDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-4">
+              <h2 className="text-2xl font-bold text-white">BambooHR Sync Results</h2>
+              {syncStats && (
+                <p className="text-orange-50 text-sm mt-1">
+                  {syncStats.totalInBamboo} employees in BambooHR • {syncStats.totalInSystem} in system • {syncChanges.length} change(s) detected
+                </p>
+              )}
+            </div>
+            
+            <div className="p-6 overflow-y-auto flex-1">
+              {syncChanges.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4">✅</div>
+                  <p className="text-xl font-semibold text-gray-900">Everything is in sync!</p>
+                  <p className="text-gray-600 mt-2">No changes needed.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={selectedChanges.size === syncChanges.length}
+                        onChange={handleToggleAllSyncChanges}
+                        className="rounded border-gray-300"
+                      />
+                      Select All ({selectedChanges.size} of {syncChanges.length} selected)
+                    </label>
+                  </div>
+
+                  {syncChanges.map((change, index) => (
+                    <div
+                      key={index}
+                      className={`border rounded-lg p-4 ${
+                        change.type === 'add' 
+                          ? 'border-green-300 bg-green-50' 
+                          : change.type === 'update'
+                          ? 'border-blue-300 bg-blue-50'
+                          : 'border-red-300 bg-red-50'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedChanges.has(index)}
+                          onChange={() => handleToggleSyncChange(index)}
+                          className="mt-1 rounded border-gray-300"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`px-2 py-1 rounded text-xs font-semibold uppercase ${
+                              change.type === 'add'
+                                ? 'bg-green-600 text-white'
+                                : change.type === 'update'
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-red-600 text-white'
+                            }`}>
+                              {change.type}
+                            </span>
+                            <span className="font-semibold text-gray-900">{change.name}</span>
+                          </div>
+                          
+                          <div className="text-sm space-y-1">
+                            <div className="text-gray-700">
+                              <span className="font-medium">Email:</span> {change.email}
+                            </div>
+                            
+                            {change.type === 'add' && (
+                              <>
+                                {change.emailGenerated && (
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <span className="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs font-medium">
+                                      ⚠️ Email auto-generated
+                                    </span>
+                                  </div>
+                                )}
+                                {change.title && (
+                                  <div className="text-gray-700">
+                                    <span className="font-medium">Title:</span> {change.title}
+                                  </div>
+                                )}
+                                {change.managerEmail && (
+                                  <div className="text-gray-700">
+                                    <span className="font-medium">Manager:</span> {change.managerEmail}
+                                  </div>
+                                )}
+                              </>
+                            )}
+                            
+                            {change.type === 'update' && (
+                              <div className="text-gray-700">
+                                <span className="font-medium">Title:</span>{' '}
+                                <span className="line-through text-red-600">{change.currentTitle}</span>
+                                {' → '}
+                                <span className="text-green-600 font-semibold">{change.newTitle}</span>
+                              </div>
+                            )}
+                            
+                            {change.type === 'remove' && change.title && (
+                              <div className="text-gray-700">
+                                <span className="font-medium">Title:</span> {change.title}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="border-t px-6 py-4 bg-gray-50 flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowSyncDialog(false);
+                  setSyncChanges([]);
+                  setSelectedChanges(new Set());
+                  setSyncStats(null);
+                }}
+                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 font-medium"
+              >
+                Cancel
+              </button>
+              {syncChanges.length > 0 && (
+                <button
+                  onClick={handleApplySyncChanges}
+                  disabled={syncing || selectedChanges.size === 0}
+                  className="px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:bg-gray-400 font-medium"
+                >
+                  {syncing ? 'Applying...' : `Apply ${selectedChanges.size} Change(s)`}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
